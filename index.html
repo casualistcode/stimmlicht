@@ -11,6 +11,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Stimmlicht">
 <title>Stimmlicht</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230c0b0a'/%3E%3Ccircle cx='32' cy='32' r='25' fill='none' stroke='%23ffffff' stroke-opacity='.25' stroke-width='1.5' stroke-dasharray='6.5 6.6'/%3E%3Ccircle cx='32' cy='32' r='15' fill='%23ff9a2e'/%3E%3C/svg%3E">
 <style>
   :root {
@@ -56,14 +58,43 @@
 
   /* ---------- Kopfzeile ---------- */
   header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 32px;
     font-size: .68rem;
     letter-spacing: .26em;
     color: var(--leise);
-    opacity: .8;
     white-space: nowrap;
   }
   header .marke { text-transform: uppercase; font-weight: 600; }
   header .punkt { margin: 0 .5em; opacity: .6; }
+  [hidden] { display: none !important; }
+
+  /* Kammerton: antippen, Zahl eingeben */
+  #kammerton {
+    letter-spacing: inherit;
+    padding: 9px 6px;
+    margin: -9px -6px;
+    text-decoration: underline dotted rgba(255, 255, 255, .32);
+    text-underline-offset: .4em;
+  }
+  #feld { font-size: 1rem; letter-spacing: .03em; color: var(--text); }
+  #eingabe {
+    width: 4.6em;
+    margin: 0 .15em;
+    padding: 3px 6px;
+    font: inherit;
+    font-size: 16px;              /* unter 16px zoomt das iPhone beim Antippen */
+    color: var(--text);
+    text-align: center;
+    background: rgba(255, 255, 255, .07);
+    border: 1px solid rgba(255, 255, 255, .22);
+    border-radius: 8px;
+    outline: none;
+    -webkit-user-select: text;
+    user-select: text;
+  }
 
   sup { font-size: .6em; line-height: 0; vertical-align: .58em; margin-left: .03em; }
   sub { font-size: .6em; line-height: 0; vertical-align: -.2em; }
@@ -252,7 +283,7 @@
 <body class="eng">
 
 <header>
-  <span class="marke">Stimmlicht</span><span class="punkt">·</span><span id="kammerton"></span>
+  <span class="marke">Stimmlicht</span><span class="punkt">·</span><button id="kammerton" type="button"></button><span id="feld" hidden>a<sup>1</sup> = <input id="eingabe" type="text" inputmode="decimal" enterkeyhint="done" autocomplete="off" aria-label="Kammerton a1 in Hertz"> Hz</span>
 </header>
 
 <main>
@@ -277,16 +308,25 @@
 
 <script>
   // ===== Einstellungen =====================================================
-  const KAMMERTON_HZ = 440;   // Frequenz von a1 in Hz (z. B. 443)
+  const KAMMERTON_HZ = 440;   // Vorgabe für a1 in Hz; auf der Seite änderbar (Tipp auf „a¹ = 440 Hz“)
   const START_MIDI   = 69;    // Startton der Temperaturoktave (69 = a1); Oktave = Startton bis Startton + 12
   // =========================================================================
 
   const A1_MIDI  = 69;
   const TONNAMEN = ["c", "cis", "d", "dis", "e", "f", "fis", "g", "gis", "a", "b", "h"];
+  const HZ_MIN = 350, HZ_MAX = 520;               // erlaubter Bereich für den Kammerton
+  const SPEICHER = "stimmlicht.kammerton";
+
+  // Kammerton: zuletzt auf diesem Gerät eingestellter Wert, sonst die Vorgabe
+  let kammerton = KAMMERTON_HZ;
+  try {
+    const gemerkt = parseFloat(localStorage.getItem(SPEICHER));
+    if (gemerkt >= HZ_MIN && gemerkt <= HZ_MAX) kammerton = gemerkt;
+  } catch (e) {}
 
   // Gleichstufige Frequenz zur MIDI-Notennummer n
   function frequenz(n) {
-    return KAMMERTON_HZ * Math.pow(2, (n - A1_MIDI) / 12);
+    return kammerton * Math.pow(2, (n - A1_MIDI) / 12);
   }
 
   // Deutscher Tonname in Helmholtz-Schreibweise (c1 = MIDI 60), zerlegt in Name und Oktavziffer
@@ -342,7 +382,7 @@
     return liste;
   }
 
-  const schritte = schritteBerechnen();
+  let schritte = schritteBerechnen();
   let aktuell = 0;
   let startzeit = performance.now();
 
@@ -445,14 +485,61 @@
   }
   document.addEventListener("visibilitychange", wachHalten);
 
-  // ----- Start -----
+  // ----- Kammerton einstellen: Tipp auf „a¹ = 440 Hz“ öffnet ein Zahlenfeld -----
   const elKammerton = document.getElementById("kammerton");
-  elKammerton.appendChild(tonKnoten(A1_MIDI));
-  elKammerton.appendChild(document.createTextNode(" = " + String(KAMMERTON_HZ).replace(".", ",") + " Hz"));
+  const feld        = document.getElementById("feld");
+  const eingabe     = document.getElementById("eingabe");
 
+  function kammertonZeigen() {
+    const wert = String(kammerton).replace(".", ",");
+    elKammerton.textContent = "";
+    elKammerton.appendChild(tonKnoten(A1_MIDI));
+    elKammerton.appendChild(document.createTextNode(" = " + wert + " Hz"));
+    elKammerton.setAttribute("aria-label", "Kammerton a1 = " + wert + " Hertz, ändern");
+  }
+
+  function kammertonSetzen(wert) {
+    if (!(wert >= HZ_MIN && wert <= HZ_MAX)) return;      // Unsinn wird verworfen
+    kammerton = Math.round(wert * 10) / 10;
+    try { localStorage.setItem(SPEICHER, String(kammerton)); } catch (e) {}
+    schritte = schritteBerechnen();
+    kammertonZeigen();
+    anzeigen();
+  }
+
+  function eingabeBeenden(uebernehmen) {
+    if (feld.hidden) return;
+    feld.hidden = true;
+    elKammerton.hidden = false;
+    if (uebernehmen) kammertonSetzen(parseFloat(eingabe.value.replace(",", ".")));
+  }
+
+  elKammerton.addEventListener("click", function () {
+    elKammerton.hidden = true;
+    feld.hidden = false;
+    eingabe.value = String(kammerton).replace(".", ",");
+    eingabe.focus();
+    eingabe.select();
+  });
+  eingabe.addEventListener("blur", function () { eingabeBeenden(true); });
+  eingabe.addEventListener("keydown", function (e) {
+    e.stopPropagation();                                   // Pfeiltasten gehören hier dem Feld
+    if (e.key === "Enter")  { eingabeBeenden(true);  eingabe.blur(); }
+    if (e.key === "Escape") { eingabeBeenden(false); eingabe.blur(); }
+  });
+
+  // ----- Start -----
+  kammertonZeigen();
   anzeigen();
   wachHalten();
   requestAnimationFrame(bild);
+
+  // Offline-Betrieb: Service Worker hält die Seite auf dem Gerät vor
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () {
+      navigator.serviceWorker.register("sw.js").catch(function () {});
+    });
+  }
 </script>
 
 </body>

@@ -6,8 +6,21 @@ aktuellen Intervalls – orange bei engen Quinten, blau bei weiten Quarten.
 
 **Zur Seite:** <https://casualistcode.github.io/stimmlicht/>
 
-Die ganze Seite steckt in einer einzigen Datei: `index.html` (kein Framework, keine
-externen Bibliotheken).
+Die ganze Seite steckt in `index.html` (kein Framework, keine externen Bibliotheken).
+Die übrigen Dateien machen daraus eine installierbare App, die ohne Netz läuft:
+`manifest.webmanifest` (Name und Icon), `sw.js` (hält die Seite auf dem Gerät vor)
+und die beiden Icons.
+
+## Als App installieren
+
+Einmal mit Internet die Seite öffnen, danach läuft Stimmlicht auch ohne Empfang.
+
+- **Android (Chrome):** Menü ⋮ → **App installieren** bzw. **Zum Startbildschirm hinzufügen**.
+- **iPhone/iPad (Safari):** Teilen-Symbol → **Zum Home-Bildschirm**.
+- **Rechner (Chrome/Edge):** Installieren-Symbol rechts in der Adresszeile.
+
+Nach einer Änderung an der Seite zeigt die App die neue Fassung beim zweiten Öffnen
+(beim ersten wird sie im Hintergrund geholt).
 
 ## Bedienung
 
@@ -15,6 +28,8 @@ externen Bibliotheken).
   a1–a2; nach Schritt 12 geht es wieder zu Schritt 1.
 - **Springen:** Auf einen Tonnamen am Ring tippen – die Seite springt zu dem Schritt,
   in dem dieser Ton gestimmt wird. Der Ring zeigt nebenbei, wie weit man im Zirkel ist.
+- **Kammerton:** In der Kopfzeile auf „a¹ = 440 Hz“ tippen, Zahl eingeben (350–520 Hz,
+  auch mit Komma, z. B. 442,5) und bestätigen. Der Wert bleibt auf dem Gerät gespeichert.
 - Am Rechner gehen auch die Pfeiltasten (und damit Bluetooth-Fußtaster zum Umblättern).
 - Der Bildschirm bleibt an, solange die Seite zu sehen ist (wo der Browser das erlaubt).
 
@@ -25,7 +40,8 @@ externen Bibliotheken).
    **Create repository** klicken.
 3. Auf der Seite des neuen Repositorys **uploading an existing file** anklicken
    (oder **Add file** → **Upload files**).
-4. `index.html` und `README.md` ins Fenster ziehen und mit **Commit changes** bestätigen.
+4. Alle Dateien (`index.html`, `manifest.webmanifest`, `sw.js`, `icon-192.png`,
+   `icon-512.png`, `README.md`) ins Fenster ziehen und mit **Commit changes** bestätigen.
 
 ## GitHub Pages aktivieren
 
@@ -36,22 +52,21 @@ externen Bibliotheken).
    `https://<benutzername>.github.io/<repository-name>/`
    (die Adresse steht dann auch oben auf der Pages-Seite).
 
-Tipp: Die Seite auf dem Handy öffnen und über das Browser-Menü „Zum Startbildschirm
-hinzufügen“ – dann startet sie wie eine App. Die Dateien selbst lassen sich im
-Repository über **Code** → **Download ZIP** herunterladen.
+Die Dateien selbst lassen sich im Repository über **Code** → **Download ZIP**
+herunterladen.
 
 ## Anpassen
 
-Ganz oben im `<script>`-Teil von `index.html` stehen zwei Konstanten:
+Der Kammerton wird auf der Seite eingestellt (siehe Bedienung). Ganz oben im
+`<script>`-Teil von `index.html` stehen die Vorgaben:
 
 ```js
-const KAMMERTON_HZ = 440;   // Frequenz von a1 in Hz (z. B. 443)
+const KAMMERTON_HZ = 440;   // Vorgabe für a1 in Hz, solange auf dem Gerät nichts eingestellt ist
 const START_MIDI   = 69;    // Startton der Temperaturoktave (69 = a1)
 ```
 
 Wert ändern, Datei speichern, erneut hochladen (bzw. direkt auf GitHub über das
-Stift-Symbol bearbeiten) – nach kurzer Zeit ist die Seite aktualisiert. Der
-eingestellte Kammerton steht klein in der Kopfzeile der Seite.
+Stift-Symbol bearbeiten) – nach kurzer Zeit ist die Seite aktualisiert.
 
 ## Rechenweg
 
