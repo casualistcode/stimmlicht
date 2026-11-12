@@ -16,9 +16,10 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230c0b0a'/%3E%3Ccircle cx='32' cy='32' r='25' fill='none' stroke='%23ffffff' stroke-opacity='.25' stroke-width='1.5' stroke-dasharray='6.5 6.6'/%3E%3Ccircle cx='32' cy='32' r='15' fill='%23ff9a2e'/%3E%3C/svg%3E">
 <style>
   :root {
-    /* Durchmesser des Quintenzirkels – alles andere richtet sich danach */
-    --d: max(200px, min(90vw, calc(100vh - 330px), 460px));
-    --d: max(200px, min(90vw, calc(100dvh - 330px), 460px));
+    /* Durchmesser des Quintenzirkels – alles andere richtet sich danach.
+       Das ist nur der Startwert; das Skript misst den freien Platz und setzt den genauen Wert. */
+    --d: max(120px, min(90vw, calc(100vh - 370px), 460px));
+    --d: max(120px, min(90vw, calc(100dvh - 370px), 460px));
 
     --grund: #0c0b0a;
     --text:  #f3eee6;
@@ -33,11 +34,15 @@
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
-  html { height: 100%; background: var(--grund); overflow-x: hidden; }
+  html { height: 100%; background: var(--grund); overflow: hidden; overscroll-behavior: none; }
 
+  /* Die Seite füllt genau den sichtbaren Bereich: nichts scrollt, nichts verschiebt sich */
   body {
-    min-height: 100vh;
-    min-height: 100dvh;
+    position: fixed;
+    top: 0; right: 0; bottom: 0; left: 0;
+    overflow: hidden;
+    overflow: clip;               /* auch der Lichtschein kann nichts verschieben */
+    overscroll-behavior: none;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -46,7 +51,6 @@
     color: var(--text);
     font-family: var(--sans);
     text-align: center;
-    overflow-x: hidden;
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
     -webkit-user-select: none;
@@ -58,10 +62,11 @@
 
   /* ---------- Kopfzeile ---------- */
   header {
+    flex: none;
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 32px;
+    height: 32px;
     font-size: .68rem;
     letter-spacing: .26em;
     color: var(--leise);
@@ -101,13 +106,13 @@
 
   /* ---------- Bühne ---------- */
   main {
-    flex: 1;
+    flex: 1 1 0;
+    min-height: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     width: 100%;
-    padding: 14px 0 18px;
   }
 
   /* ---------- Quintenzirkel mit Licht ---------- */
@@ -198,9 +203,12 @@
   .ton:active { color: var(--text); }
 
   /* ---------- Angaben ---------- */
-  .angaben { margin-top: calc(var(--d) * .035 + 10px); }
+  /* Jede Zeile hat eine feste Höhe, damit der Block bei jedem Schritt gleich hoch ist */
+  .angaben { flex: none; padding: 16px 0 18px; white-space: nowrap; }
 
   #schritt {
+    height: 16px;
+    line-height: 16px;
     font-size: .72rem;
     font-weight: 600;
     letter-spacing: .24em;
@@ -209,31 +217,33 @@
   }
 
   #intervall {
-    margin-top: .32em;
+    height: 1.2em;
+    line-height: 1.2;
+    margin-top: .28em;
     font-family: var(--serif);
     font-weight: 400;
-    font-size: clamp(2rem, 9.6vw, 2.9rem);
-    line-height: 1.15;
-    white-space: nowrap;
+    font-size: clamp(1.8rem, 9.2vw, 2.9rem);
   }
 
   #richtung {
-    margin-top: .1em;
+    height: 32px;
+    line-height: 32px;
     font-family: var(--serif);
     font-style: italic;
     font-size: 1.55rem;
-    line-height: 1.2;
     color: var(--akzent);
   }
 
   #rate {
-    margin-top: .25em;
+    height: 36px;
+    line-height: 36px;
     font-size: 1rem;
     color: var(--leise);
   }
   #zahl {
     font-family: var(--serif);
     font-size: 1.6em;
+    line-height: 1;
     color: var(--text);
     font-variant-numeric: lining-nums tabular-nums;
     margin-right: .12em;
@@ -241,6 +251,7 @@
 
   /* ---------- Die zwei Tasten ---------- */
   nav {
+    flex: none;
     display: flex;
     width: 100%;
     max-width: 460px;
@@ -269,11 +280,11 @@
   /* Handy quer: Licht links, Angaben rechts */
   @media (orientation: landscape) and (max-height: 540px) {
     :root {
-      --d: max(170px, min(44vw, calc(100vh - 150px)));
-      --d: max(170px, min(44vw, calc(100dvh - 150px)));
+      --d: max(120px, min(40vw, calc(100vh - 150px)));
+      --d: max(120px, min(40vw, calc(100dvh - 150px)));
     }
-    main { flex-direction: row; padding: 8px 0 12px; }
-    .angaben { margin: 0 0 0 7vw; }
+    main { flex-direction: row; }
+    .angaben { padding: 0; margin-left: 7vw; }
     #intervall { font-size: clamp(1.7rem, 5vw, 2.6rem); }
     nav { max-width: none; }
     nav button { height: 56px; }
@@ -286,14 +297,14 @@
   <span class="marke">Stimmlicht</span><span class="punkt">·</span><button id="kammerton" type="button"></button><span id="feld" hidden>a<sup>1</sup> = <input id="eingabe" type="text" inputmode="decimal" enterkeyhint="done" autocomplete="off" aria-label="Kammerton a1 in Hertz"> Hz</span>
 </header>
 
-<main>
+<main id="buehne">
   <div class="zirkel" id="zirkel">
     <div class="fassung"></div>
     <div class="licht" id="licht"><div class="schein"></div><div class="kern"></div></div>
     <svg class="bahn" id="bahn" viewBox="-100 -100 200 200" aria-hidden="true"></svg>
   </div>
 
-  <div class="angaben" aria-live="polite">
+  <div class="angaben" id="angaben" aria-live="polite">
     <p id="schritt"></p>
     <p id="intervall"></p>
     <p id="richtung"></p>
@@ -455,6 +466,7 @@
   function gehe(nummer) {
     aktuell = (nummer + schritte.length) % schritte.length;
     anzeigen();
+    messen();                           // falls der Browser eine Größenänderung nicht gemeldet hat
     wachHalten();
   }
 
@@ -528,7 +540,28 @@
     if (e.key === "Escape") { eingabeBeenden(false); eingabe.blur(); }
   });
 
+  // ----- Größe: der Zirkel bekommt genau den Platz, der zwischen Kopfzeile und Tasten frei ist -----
+  const buehne  = document.getElementById("buehne");
+  const angaben = document.getElementById("angaben");
+  const quer    = window.matchMedia("(orientation: landscape) and (max-height: 540px)");
+  let durchmesser = 0;
+
+  function messen() {
+    const breite = buehne.clientWidth, hoehe = buehne.clientHeight;
+    const platz = quer.matches ? Math.min(breite * 0.42, hoehe - 12)
+                               : Math.min(breite, hoehe - angaben.offsetHeight - 8);
+    const d = Math.max(120, Math.min(460, Math.floor(platz)));
+    if (d !== durchmesser) {
+      durchmesser = d;
+      document.documentElement.style.setProperty("--d", d + "px");
+    }
+  }
+  window.addEventListener("resize", messen);
+  window.addEventListener("orientationchange", messen);
+  if ("ResizeObserver" in window) new ResizeObserver(messen).observe(buehne);
+
   // ----- Start -----
+  messen();
   kammertonZeigen();
   anzeigen();
   wachHalten();
