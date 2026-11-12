@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0c0b0a">
+<meta name="color-scheme" content="dark">
+<meta name="description" content="Ein Licht, das im Takt der Schwebung pulsiert – Hilfe beim Legen der gleichstufigen Temperatur nach Gehör.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Stimmlicht">
+<title>Stimmlicht</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230c0b0a'/%3E%3Ccircle cx='32' cy='32' r='25' fill='none' stroke='%23ffffff' stroke-opacity='.25' stroke-width='1.5' stroke-dasharray='6.5 6.6'/%3E%3Ccircle cx='32' cy='32' r='15' fill='%23ff9a2e'/%3E%3C/svg%3E">
+<style>
+  :root {
+    /* Durchmesser des Quintenzirkels – alles andere richtet sich danach */
+    --d: max(200px, min(90vw, calc(100vh - 330px), 460px));
+    --d: max(200px, min(90vw, calc(100dvh - 330px), 460px));
+
+    --grund: #0c0b0a;
+    --text:  #f3eee6;
+    --leise: #9c958b;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+    --sans:  system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  }
+
+  /* Orange = eng, Blau = weit */
+  body.eng  { --rgb: 255, 140, 26; --akzent: #ffab52; --kern: #ffe0b3; --mitte: #ffa53f; --rand: #ff8514; }
+  body.weit { --rgb: 47, 140, 255; --akzent: #7ab8ff; --kern: #dcecff; --mitte: #66afff; --rand: #2687ff; }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { height: 100%; background: var(--grund); overflow-x: hidden; }
+
+  body {
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: max(14px, env(safe-area-inset-top)) 5vw max(16px, env(safe-area-inset-bottom));
+    background: var(--grund);
+    color: var(--text);
+    font-family: var(--sans);
+    text-align: center;
+    overflow-x: hidden;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+  button:focus-visible { outline: 2px solid rgba(255, 255, 255, .55); outline-offset: 3px; }
+
+  /* ---------- Kopfzeile ---------- */
+  header {
+    font-size: .68rem;
+    letter-spacing: .26em;
+    color: var(--leise);
+    opacity: .8;
+    white-space: nowrap;
+  }
+  header .marke { text-transform: uppercase; font-weight: 600; }
+  header .punkt { margin: 0 .5em; opacity: .6; }
+
+  sup { font-size: .6em; line-height: 0; vertical-align: .58em; margin-left: .03em; }
+  sub { font-size: .6em; line-height: 0; vertical-align: -.2em; }
+
+  /* ---------- Bühne ---------- */
+  main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 14px 0 18px;
+  }
+
+  /* ---------- Quintenzirkel mit Licht ---------- */
+  .zirkel {
+    position: relative;
+    flex: none;
+    width: var(--d);
+    height: var(--d);
+  }
+
+  .fassung, .kern {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: calc(var(--d) * .6);
+    height: calc(var(--d) * .6);
+    margin: calc(var(--d) * -.3) 0 0 calc(var(--d) * -.3);
+    border-radius: 50%;
+  }
+
+  /* bleibt immer schwach sichtbar */
+  .fassung {
+    border: 1px solid rgba(255, 255, 255, .1);
+    background: rgba(255, 255, 255, .018);
+  }
+
+  /* pulsiert: die Deckkraft wird per JavaScript gesetzt */
+  .licht {
+    position: absolute;
+    left: 0; top: 0; width: 100%; height: 100%;
+    pointer-events: none;
+    will-change: opacity;
+  }
+
+  .schein {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 100vw;
+    height: calc(var(--d) * 1.7);
+    transform: translate(-50%, -50%);
+    background: radial-gradient(circle at center,
+      rgba(var(--rgb), .30) 0,
+      rgba(var(--rgb), .13) calc(var(--d) * .40),
+      rgba(var(--rgb), .04) calc(var(--d) * .62),
+      rgba(var(--rgb), 0)   calc(var(--d) * .85));
+  }
+
+  .kern {
+    background: radial-gradient(circle at center, var(--kern) 0%, var(--mitte) 44%, var(--rand) 100%);
+    box-shadow: 0 0 calc(var(--d) * .08) calc(var(--d) * .012) rgba(var(--rgb), .75);
+  }
+
+  .bahn {
+    position: absolute;
+    left: 0; top: 0; width: 100%; height: 100%;
+    overflow: visible;
+    pointer-events: none;
+  }
+  .bahn path {
+    fill: none;
+    stroke: rgba(255, 255, 255, .13);
+    stroke-width: 1.5px;
+    stroke-linecap: round;
+    vector-effect: non-scaling-stroke;
+    transition: stroke .25s;
+  }
+  .bahn path.fertig { stroke: rgba(255, 255, 255, .36); }
+  .bahn path.aktiv  { stroke: var(--akzent); stroke-width: 2.5px; }
+
+  /* Tonnamen am Ring: tippen springt zu dem Schritt, in dem der Ton gestimmt wird */
+  .ton {
+    position: absolute;
+    width: max(44px, calc(var(--d) * .21));
+    height: max(44px, calc(var(--d) * .21));
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: max(13px, calc(var(--d) * .052));
+    line-height: 1;
+    color: rgba(255, 255, 255, .3);
+    transition: color .25s;
+  }
+  .ton.fertig { color: rgba(255, 255, 255, .56); }
+  .ton.bezug  { color: var(--text); }
+  .ton.ziel   { color: var(--akzent); font-weight: 700; }
+  .ton:active { color: var(--text); }
+
+  /* ---------- Angaben ---------- */
+  .angaben { margin-top: calc(var(--d) * .035 + 10px); }
+
+  #schritt {
+    font-size: .72rem;
+    font-weight: 600;
+    letter-spacing: .24em;
+    text-transform: uppercase;
+    color: var(--leise);
+  }
+
+  #intervall {
+    margin-top: .32em;
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(2rem, 9.6vw, 2.9rem);
+    line-height: 1.15;
+    white-space: nowrap;
+  }
+
+  #richtung {
+    margin-top: .1em;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 1.55rem;
+    line-height: 1.2;
+    color: var(--akzent);
+  }
+
+  #rate {
+    margin-top: .25em;
+    font-size: 1rem;
+    color: var(--leise);
+  }
+  #zahl {
+    font-family: var(--serif);
+    font-size: 1.6em;
+    color: var(--text);
+    font-variant-numeric: lining-nums tabular-nums;
+    margin-right: .12em;
+  }
+
+  /* ---------- Die zwei Tasten ---------- */
+  nav {
+    display: flex;
+    width: 100%;
+    max-width: 460px;
+  }
+  nav button {
+    flex: 1;
+    height: clamp(68px, 11vh, 88px);
+    border: 1px solid rgba(255, 255, 255, .09);
+    border-radius: 22px;
+    background: rgba(255, 255, 255, .04);
+    font-size: 1.22rem;
+    font-weight: 500;
+    letter-spacing: .01em;
+    transition: background .15s, transform .15s;
+  }
+  nav button + button { margin-left: 12px; }
+  #weiter { background: rgba(255, 255, 255, .085); border-color: rgba(255, 255, 255, .14); }
+  nav button:active { background: rgba(255, 255, 255, .16); transform: scale(.98); }
+  .pfeil { font-size: .62em; opacity: .55; vertical-align: .14em; margin: 0 .45em; }
+
+  @media (hover: hover) {
+    .ton:hover { color: var(--text); }
+    nav button:hover { background: rgba(255, 255, 255, .11); }
+  }
+
+  /* Handy quer: Licht links, Angaben rechts */
+  @media (orientation: landscape) and (max-height: 540px) {
+    :root {
+      --d: max(170px, min(44vw, calc(100vh - 150px)));
+      --d: max(170px, min(44vw, calc(100dvh - 150px)));
+    }
+    main { flex-direction: row; padding: 8px 0 12px; }
+    .angaben { margin: 0 0 0 7vw; }
+    #intervall { font-size: clamp(1.7rem, 5vw, 2.6rem); }
+    nav { max-width: none; }
+    nav button { height: 56px; }
+  }
+</style>
+</head>
+<body class="eng">
+
+<header>
+  <span class="marke">Stimmlicht</span><span class="punkt">·</span><span id="kammerton"></span>
+</header>
+
+<main>
+  <div class="zirkel" id="zirkel">
+    <div class="fassung"></div>
+    <div class="licht" id="licht"><div class="schein"></div><div class="kern"></div></div>
+    <svg class="bahn" id="bahn" viewBox="-100 -100 200 200" aria-hidden="true"></svg>
+  </div>
+
+  <div class="angaben" aria-live="polite">
+    <p id="schritt"></p>
+    <p id="intervall"></p>
+    <p id="richtung"></p>
+    <p id="rate"><span id="zahl"></span> Schwebungen/s</p>
+  </div>
+</main>
+
+<nav>
+  <button id="zurueck" type="button"><span class="pfeil" aria-hidden="true">◀&#xFE0E;</span>Zurück</button>
+  <button id="weiter" type="button">Weiter<span class="pfeil" aria-hidden="true">▶&#xFE0E;</span></button>
+</nav>
+
+<script>
+  // ===== Einstellungen =====================================================
+  const KAMMERTON_HZ = 440;   // Frequenz von a1 in Hz (z. B. 443)
+  const START_MIDI   = 69;    // Startton der Temperaturoktave (69 = a1); Oktave = Startton bis Startton + 12
+  // =========================================================================
+
+  const A1_MIDI  = 69;
+  const TONNAMEN = ["c", "cis", "d", "dis", "e", "f", "fis", "g", "gis", "a", "b", "h"];
+
+  // Gleichstufige Frequenz zur MIDI-Notennummer n
+  function frequenz(n) {
+    return KAMMERTON_HZ * Math.pow(2, (n - A1_MIDI) / 12);
+  }
+
+  // Deutscher Tonname in Helmholtz-Schreibweise (c1 = MIDI 60), zerlegt in Name und Oktavziffer
+  function tonTeile(n) {
+    const name = TONNAMEN[((n % 12) + 12) % 12];
+    const oktave = Math.floor(n / 12) - 4;
+    if (oktave >= 1) return { name: name, hoch: String(oktave), tief: "" };      // a1, e2 …
+    if (oktave === 0) return { name: name, hoch: "", tief: "" };                 // kleine Oktave: c
+    const gross = name.charAt(0).toUpperCase() + name.slice(1);
+    return { name: gross, hoch: "", tief: oktave === -1 ? "" : String(-oktave - 1) };   // C, C1, C2
+  }
+
+  function tonText(n) {
+    const t = tonTeile(n);
+    return t.name + t.hoch + t.tief;
+  }
+
+  // Tonname mit hochgestellter Oktavziffer (a¹), wie im Orgelbau üblich
+  function tonKnoten(n) {
+    const t = tonTeile(n);
+    const stueck = document.createDocumentFragment();
+    stueck.appendChild(document.createTextNode(t.name));
+    if (t.hoch || t.tief) {
+      const ziffer = document.createElement(t.hoch ? "sup" : "sub");
+      ziffer.textContent = t.hoch || t.tief;
+      stueck.appendChild(ziffer);
+    }
+    return stueck;
+  }
+
+  // Quintenzirkel innerhalb der Temperaturoktave:
+  // Quinte aufwärts, solange der neue Ton in der Oktave liegt, sonst Quarte abwärts.
+  function schritteBerechnen() {
+    const liste = [];
+    let von = START_MIDI;
+    for (let i = 0; i < 12; i++) {
+      const istQuinte = von + 7 <= START_MIDI + 12;
+      const nach   = istQuinte ? von + 7 : von - 5;
+      const fUnten = frequenz(Math.min(von, nach));
+      const fOben  = frequenz(Math.max(von, nach));
+      // Koinzidenzteiltöne: Quinte 3:2, Quarte 4:3
+      const differenz = istQuinte ? 2 * fOben - 3 * fUnten
+                                  : 3 * fOben - 4 * fUnten;
+      liste.push({
+        art:  istQuinte ? "Quinte" : "Quarte",
+        von:  von,
+        nach: nach,
+        eng:  differenz < 0,            // oberer Ton zu tief = Intervall zu eng
+        rate: Math.abs(differenz)       // Schwebungen pro Sekunde
+      });
+      von = nach;
+    }
+    return liste;
+  }
+
+  const schritte = schritteBerechnen();
+  let aktuell = 0;
+  let startzeit = performance.now();
+
+  const zirkel      = document.getElementById("zirkel");
+  const bahn        = document.getElementById("bahn");
+  const licht       = document.getElementById("licht");
+  const elSchritt   = document.getElementById("schritt");
+  const elIntervall = document.getElementById("intervall");
+  const elRichtung  = document.getElementById("richtung");
+  const elZahl      = document.getElementById("zahl");
+
+  // ----- Ring aufbauen: 12 Bögen (Intervalle) und 12 Tonnamen wie auf einem Zifferblatt -----
+  const RADIUS = 89;      // im Koordinatensystem des SVG (−100 … 100)
+  const LUECKE = 9;       // Grad Abstand zwischen Bogen und Tonname
+  const boegen = [];
+  const toene  = [];
+
+  function punkt(grad, radius) {
+    const w = grad * Math.PI / 180;
+    return [radius * Math.sin(w), -radius * Math.cos(w)];   // 0° = oben, im Uhrzeigersinn
+  }
+
+  schritte.forEach(function (s, i) {
+    const a = punkt(i * 30 + LUECKE, RADIUS);
+    const b = punkt((i + 1) * 30 - LUECKE, RADIUS);
+    const bogen = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    bogen.setAttribute("d", "M" + a[0].toFixed(2) + " " + a[1].toFixed(2) +
+      " A" + RADIUS + " " + RADIUS + " 0 0 1 " + b[0].toFixed(2) + " " + b[1].toFixed(2));
+    bahn.appendChild(bogen);
+    boegen.push(bogen);
+
+    const ort = punkt((i + 1) * 30, RADIUS / 2);            // in Prozent der Zirkelgröße
+    const ton = document.createElement("button");
+    ton.type = "button";
+    ton.className = "ton";
+    ton.textContent = tonTeile(s.nach).name;
+    ton.style.left = (50 + ort[0]) + "%";
+    ton.style.top  = (50 + ort[1]) + "%";
+    ton.setAttribute("aria-label", "Schritt " + (i + 1) + ": " + s.art + " " + tonText(s.von) + " – " + tonText(s.nach));
+    ton.addEventListener("click", function () { gehe(i); });
+    zirkel.appendChild(ton);
+    toene.push(ton);
+  });
+
+  // ----- Anzeige -----
+  function anzeigen() {
+    const s = schritte[aktuell];
+    const bezug = (aktuell + schritte.length - 1) % schritte.length;   // Ton, von dem aus gestimmt wird
+
+    document.body.className = s.eng ? "eng" : "weit";
+
+    elSchritt.textContent = "Schritt " + (aktuell + 1) + "/" + schritte.length;
+    elIntervall.textContent = s.art + " ";
+    elIntervall.appendChild(tonKnoten(s.von));
+    elIntervall.appendChild(document.createTextNode(" – "));
+    elIntervall.appendChild(tonKnoten(s.nach));
+    elRichtung.textContent = s.eng ? "eng" : "weit";
+    elZahl.textContent = s.rate.toFixed(2).replace(".", ",");
+
+    for (let i = 0; i < schritte.length; i++) {
+      boegen[i].setAttribute("class", i === aktuell ? "aktiv" : i < aktuell ? "fertig" : "");
+      toene[i].className = "ton" + (i === aktuell ? " ziel" : i === bezug ? " bezug" : i < aktuell ? " fertig" : "");
+      if (i === aktuell) toene[i].setAttribute("aria-current", "step");
+      else toene[i].removeAttribute("aria-current");
+    }
+
+    startzeit = performance.now();      // jeder Schritt beginnt hell
+  }
+
+  function gehe(nummer) {
+    aktuell = (nummer + schritte.length) % schritte.length;
+    anzeigen();
+    wachHalten();
+  }
+
+  // Helligkeit ∝ |cos(π · Schwebungsrate · t)|
+  function bild(jetzt) {
+    const t = (jetzt - startzeit) / 1000;
+    licht.style.opacity = Math.abs(Math.cos(Math.PI * schritte[aktuell].rate * t));
+    requestAnimationFrame(bild);
+  }
+
+  // ----- Bedienung -----
+  document.getElementById("zurueck").addEventListener("click", function () { gehe(aktuell - 1); });
+  document.getElementById("weiter").addEventListener("click", function () { gehe(aktuell + 1); });
+
+  // Pfeiltasten (auch Bluetooth-Fußtaster zum Umblättern)
+  document.addEventListener("keydown", function (e) {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    if (e.key === "ArrowRight" || e.key === "ArrowDown" || e.key === "PageDown") { e.preventDefault(); gehe(aktuell + 1); }
+    if (e.key === "ArrowLeft"  || e.key === "ArrowUp"   || e.key === "PageUp")   { e.preventDefault(); gehe(aktuell - 1); }
+  });
+
+  // Bildschirm anlassen, solange die Seite zu sehen ist (wo der Browser das erlaubt)
+  let wachSperre = null;
+  function wachHalten() {
+    if (!("wakeLock" in navigator) || document.visibilityState !== "visible") return;
+    if (wachSperre && !wachSperre.released) return;
+    navigator.wakeLock.request("screen").then(function (sperre) { wachSperre = sperre; }).catch(function () {});
+  }
+  document.addEventListener("visibilitychange", wachHalten);
+
+  // ----- Start -----
+  const elKammerton = document.getElementById("kammerton");
+  elKammerton.appendChild(tonKnoten(A1_MIDI));
+  elKammerton.appendChild(document.createTextNode(" = " + String(KAMMERTON_HZ).replace(".", ",") + " Hz"));
+
+  anzeigen();
+  wachHalten();
+  requestAnimationFrame(bild);
+</script>
+
+</body>
+</html>
