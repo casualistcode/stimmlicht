@@ -28,7 +28,7 @@ Nach einer Änderung an der Seite zeigt die App die neue Fassung beim zweiten Ö
   a1–a2; nach Schritt 12 geht es wieder zu Schritt 1.
 - **Springen:** Auf einen Tonnamen am Ring tippen – die Seite springt zu dem Schritt,
   in dem dieser Ton gestimmt wird. Der Ring zeigt nebenbei, wie weit man im Zirkel ist.
-- **Kammerton:** In der Kopfzeile auf „a¹ = 440 Hz“ tippen, Zahl eingeben (350–520 Hz,
+- **Kammerton:** In der Kopfzeile auf „a¹ = 440 Hz“ tippen, Zahl eingeben (200–520 Hz,
   auch mit Komma, z. B. 442,5) und bestätigen. Der Wert bleibt auf dem Gerät gespeichert.
 - Am Rechner gehen auch die Pfeiltasten (und damit Bluetooth-Fußtaster zum Umblättern).
 - Der Bildschirm bleibt an, solange die Seite zu sehen ist (wo der Browser das erlaubt).
