@@ -2,7 +2,16 @@
 
 Kleine Hilfe beim Legen einer gleichstufigen Temperatur nach Gehör (Orgel/Klavier).
 In der Mitte eines Quintenzirkels pulsiert ein Licht im Takt der Schwebung des
-aktuellen Intervalls – orange bei engen Quinten, blau bei weiten Quarten.
+aktuellen Intervalls – orange bei engen, blau bei weiten Intervallen, ruhig weiß bei
+der reinen Oktave.
+
+Zwei Stimmzirkel stehen zur Wahl:
+
+- **Quintenzirkel a¹–a²:** zwölf Quinten und Quarten in der Temperaturoktave a¹–a².
+- **Steinway-Zirkel e–e¹:** nach Ulrich van Aaken,
+  [„Der Steinway-Stimmzirkel von e–e'“](https://www.ulrich-van-aaken.de/blind/DerSteinwayStimmzirkelvonee)
+  (EUROPIANO 1985). Beginnt mit der Terz f–a, stimmt drei große Terzen direkt und
+  zeigt nach den meisten Schritten Kontrollintervalle („Proben“) mit ihrer Schwebung.
 
 **Zur Seite:** <https://casualistcode.github.io/stimmlicht/>
 
@@ -24,10 +33,14 @@ Nach einer Änderung an der Seite zeigt die App die neue Fassung beim zweiten Ö
 
 ## Bedienung
 
-- **◀ Zurück** / **Weiter ▶** schalten durch die 12 Schritte in der Temperaturoktave
-  a1–a2; nach Schritt 12 geht es wieder zu Schritt 1.
+- **◀ Zurück** / **Weiter ▶** schalten durch die 12 Schritte; nach Schritt 12 geht
+  es wieder zu Schritt 1.
+- **Zirkel wählen:** In der Kopfzeile auf den Zirkelnamen tippen (z. B.
+  „Quintenzirkel a¹–a²“) und den anderen auswählen. Die Wahl bleibt auf dem Gerät
+  gespeichert.
 - **Springen:** Auf einen Tonnamen am Ring tippen – die Seite springt zu dem Schritt,
-  in dem dieser Ton gestimmt wird. Der Ring zeigt nebenbei, wie weit man im Zirkel ist.
+  in dem dieser Ton gestimmt wird. Der Ring zeigt nebenbei, wie weit man im Zirkel ist
+  und welches Intervall gerade gestimmt wird.
 - **Kammerton:** In der Kopfzeile auf „a¹ = 440 Hz“ tippen, Zahl eingeben (200–520 Hz,
   auch mit Komma, z. B. 442,5) und bestätigen. Der Wert bleibt auf dem Gerät gespeichert.
 - Am Rechner gehen auch die Pfeiltasten (und damit Bluetooth-Fußtaster zum Umblättern).
@@ -62,8 +75,10 @@ Der Kammerton wird auf der Seite eingestellt (siehe Bedienung). Ganz oben im
 
 ```js
 const KAMMERTON_HZ = 440;   // Vorgabe für a1 in Hz, solange auf dem Gerät nichts eingestellt ist
-const START_MIDI   = 69;    // Startton der Temperaturoktave (69 = a1)
+const START_MIDI   = 69;    // Startton des Quintenzirkels (69 = a1)
 ```
+
+Die Schritte des Steinway-Zirkels stehen weiter unten im Skript in `ZIRKEL.steinway`.
 
 Wert ändern, Datei speichern, erneut hochladen (bzw. direkt auf GitHub über das
 Stift-Symbol bearbeiten) – nach kurzer Zeit ist die Seite aktualisiert.
@@ -71,9 +86,16 @@ Stift-Symbol bearbeiten) – nach kurzer Zeit ist die Seite aktualisiert.
 ## Rechenweg
 
 - Gleichstufige Frequenz: `f = 440 · 2^((n − 69)/12)`, n = MIDI-Notennummer (a1 = 69)
-- Schwebung der Quinte: `|2 · f_oben − 3 · f_unten|` (eng)
-- Schwebung der Quarte: `|3 · f_oben − 4 · f_unten|` (weit)
+- Schwebung über die Koinzidenzteiltöne, `f_oben`/`f_unten` = oberer/unterer Ton:
+  - Quinte (3:2): `|2 · f_oben − 3 · f_unten|` (eng)
+  - Quarte (4:3): `|3 · f_oben − 4 · f_unten|` (weit)
+  - große Terz (5:4): `|4 · f_oben − 5 · f_unten|` (weit)
+  - kleine Terz (6:5): `|5 · f_oben − 6 · f_unten|` (eng)
+  - große Sexte (5:3): `|3 · f_oben − 5 · f_unten|` (weit)
+  - Oktave (2:1): `|f_oben − 2 · f_unten|` (rein, 0)
 - Helligkeit des Lichts: `|cos(π · Schwebungsrate · t)|`
+
+### Quintenzirkel a¹–a²
 
 | Schritt | Intervall | | Schwebungen/s (a1 = 440 Hz) |
 |---|---|---|---|
@@ -89,3 +111,29 @@ Stift-Symbol bearbeiten) – nach kurzer Zeit ist die Seite aktualisiert.
 | 10 | Quinte c2 – g2 | eng | 1,77 |
 | 11 | Quarte g2 – d2 | weit | 2,65 |
 | 12 | Quinte d2 – a2 | eng | 1,99 |
+
+### Steinway-Zirkel e–e¹
+
+| Schritt | gestimmt | | Schw./s | Proben (Schw./s) |
+|---|---|---|---|---|
+| 1 | Terz a → f | weit | 6,93 | – |
+| 2 | Quarte a → d1 | weit | 0,99 | Sexte f–d1 weit 7,92 |
+| 3 | Quarte f → b | weit | 0,79 | Terz b–d1 weit 9,25 |
+| 4 | Quinte d1 → g | eng | 0,66 | kleine Terz g–b eng 10,58 |
+| 5 | Quarte g → c1 | weit | 0,89 | Quinte f–c1 eng 0,59 · kleine Terz a–c1 eng 11,87 |
+| 6 | Terz b → fis | weit | 7,34 | – |
+| 7 | Quarte fis → h | weit | 0,84 | Terz g–h weit 7,78 · Sexte f–d1 weit 7,92 |
+| 8 | Quarte h → e1 | weit | 1,12 | Quinte a–e1 eng 0,74 · Terz c1–e1 weit 10,38 · Sexte g–e1 weit 8,89 |
+| 9 | Oktave e1 → e | rein | 0,00 | Quarte e–a weit 0,74 · Quinte e–h eng 0,56 |
+| 10 | Terz e → gis | weit | 6,54 | Terz gis–c1 weit 8,24 |
+| 11 | Quarte gis → cis1 | weit | 0,94 | Terz a–cis1 weit 8,73 · Quinte fis–cis1 eng 0,63 · Sexte e–cis1 weit 7,48 |
+| 12 | Quarte b → es1 | weit | 1,05 | – |
+
+Anmerkungen zur Umsetzung:
+
+- Schritt 4 heißt im Artikel „Quarte abwärts“; d¹ → g ist aber eine Quinte (der
+  Artikel nennt g–d¹ später selbst „Nachbarquint“). Stimmlicht rechnet mit der Quinte.
+- Für Schritt 11 nennt der Artikel nur „Terz, Quint und Sext“; gewählt sind a–cis¹,
+  fis–cis¹ und e–cis¹.
+- Proben, die der Artikel als Vergleich zu früheren Schritten nennt, sind nur
+  teilweise übernommen (höchstens drei pro Schritt).

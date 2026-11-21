@@ -18,19 +18,22 @@
   :root {
     /* Durchmesser des Quintenzirkels – alles andere richtet sich danach.
        Das ist nur der Startwert; das Skript misst den freien Platz und setzt den genauen Wert. */
-    --d: max(120px, min(90vw, calc(100vh - 370px), 460px));
-    --d: max(120px, min(90vw, calc(100dvh - 370px), 460px));
+    --d: max(120px, min(90vw, calc(100vh - 390px), 460px));
+    --d: max(120px, min(90vw, calc(100dvh - 390px), 460px));
 
     --grund: #0c0b0a;
     --text:  #f3eee6;
     --leise: #9c958b;
+    --orange: #ffab52;
+    --blau:   #7ab8ff;
     --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
     --sans:  system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
   }
 
-  /* Orange = eng, Blau = weit */
-  body.eng  { --rgb: 255, 140, 26; --akzent: #ffab52; --kern: #ffe0b3; --mitte: #ffa53f; --rand: #ff8514; }
-  body.weit { --rgb: 47, 140, 255; --akzent: #7ab8ff; --kern: #dcecff; --mitte: #66afff; --rand: #2687ff; }
+  /* Orange = eng, Blau = weit, warmes Weiß = rein (Oktave) */
+  body.eng  { --rgb: 255, 140, 26;  --akzent: var(--orange); --kern: #ffe0b3; --mitte: #ffa53f; --rand: #ff8514; }
+  body.weit { --rgb: 47, 140, 255;  --akzent: var(--blau);   --kern: #dcecff; --mitte: #66afff; --rand: #2687ff; }
+  body.rein { --rgb: 255, 236, 205; --akzent: #efe2cc;       --kern: #fffaf2; --mitte: #f4e6cf; --rand: #e6cfab; }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -59,31 +62,59 @@
 
   button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
   button:focus-visible { outline: 2px solid rgba(255, 255, 255, .55); outline-offset: 3px; }
+  [hidden] { display: none !important; }
 
-  /* ---------- Kopfzeile ---------- */
+  /* ---------- Kopfzeile: Name, darunter Zirkel und Kammerton ---------- */
   header {
     flex: none;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 32px;
-    font-size: .68rem;
-    letter-spacing: .26em;
+    height: 52px;
     color: var(--leise);
     white-space: nowrap;
   }
-  header .marke { text-transform: uppercase; font-weight: 600; }
-  header .punkt { margin: 0 .5em; opacity: .6; }
-  [hidden] { display: none !important; }
+  .marke {
+    font-size: .66rem;
+    font-weight: 600;
+    letter-spacing: .3em;
+    text-transform: uppercase;
+    opacity: .7;
+  }
+  .einstellung {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 24px;
+    margin-top: 6px;
+    font-size: .78rem;
+    letter-spacing: .04em;
+  }
+  .punkt { margin: 0 .7em; opacity: .6; }
 
-  /* Kammerton: antippen, Zahl eingeben */
-  #kammerton {
-    letter-spacing: inherit;
+  /* Zirkel und Kammerton: antippen zum Ändern */
+  .wahl, #kammerton {
+    position: relative;
     padding: 9px 6px;
     margin: -9px -6px;
+    letter-spacing: inherit;
     text-decoration: underline dotted rgba(255, 255, 255, .32);
     text-underline-offset: .4em;
   }
+  /* unsichtbare Auswahlliste über dem Zirkelnamen: öffnet die Auswahl des Geräts */
+  #zirkelwahl {
+    position: absolute;
+    left: 0; top: 0; width: 100%; height: 100%;
+    opacity: 0;
+    font-size: 16px;
+    border: 0;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .wahl:focus-within { outline: 2px solid rgba(255, 255, 255, .55); outline-offset: -2px; border-radius: 6px; }
+
   #feld { font-size: 1rem; letter-spacing: .03em; color: var(--text); }
   #eingabe {
     width: 4.6em;
@@ -183,7 +214,7 @@
   .bahn path.fertig { stroke: rgba(255, 255, 255, .36); }
   .bahn path.aktiv  { stroke: var(--akzent); stroke-width: 2.5px; }
 
-  /* Tonnamen am Ring: tippen springt zu dem Schritt, in dem der Ton gestimmt wird */
+  /* Die zwölf Töne im Quintenzirkel: tippen springt zu dem Schritt, in dem der Ton gestimmt wird */
   .ton {
     position: absolute;
     width: max(44px, calc(var(--d) * .21));
@@ -249,6 +280,21 @@
     margin-right: .12em;
   }
 
+  /* Kontrollintervalle (nur bei Zirkeln, die welche haben): Platz für drei Zeilen, immer gleich hoch */
+  #proben {
+    height: 66px;
+    padding-top: 8px;
+    font-size: .8rem;
+    line-height: 19px;
+    color: var(--leise);
+  }
+  #proben .vor  { opacity: .7; }
+  #proben .ton2 { color: var(--text); }
+  #proben .eng  { color: var(--orange); font-style: italic; }
+  #proben .weit { color: var(--blau);   font-style: italic; }
+  #proben .rein { color: #efe2cc;        font-style: italic; }
+  #proben .wert { font-variant-numeric: tabular-nums; }
+
   /* ---------- Die zwei Tasten ---------- */
   nav {
     flex: none;
@@ -294,7 +340,10 @@
 <body class="eng">
 
 <header>
-  <span class="marke">Stimmlicht</span><span class="punkt">·</span><button id="kammerton" type="button"></button><span id="feld" hidden>a<sup>1</sup> = <input id="eingabe" type="text" inputmode="decimal" enterkeyhint="done" autocomplete="off" aria-label="Kammerton a1 in Hertz"> Hz</span>
+  <p class="marke">Stimmlicht</p>
+  <p class="einstellung">
+    <span class="wahl"><span id="zirkelname"></span><select id="zirkelwahl" aria-label="Stimmzirkel wählen"></select></span><span class="punkt">·</span><button id="kammerton" type="button"></button><span id="feld" hidden>a<sup>1</sup> = <input id="eingabe" type="text" inputmode="decimal" enterkeyhint="done" autocomplete="off" aria-label="Kammerton a1 in Hertz"> Hz</span>
+  </p>
 </header>
 
 <main id="buehne">
@@ -309,6 +358,7 @@
     <p id="intervall"></p>
     <p id="richtung"></p>
     <p id="rate"><span id="zahl"></span> Schwebungen/s</p>
+    <div id="proben" hidden></div>
   </div>
 </main>
 
@@ -320,29 +370,94 @@
 <script>
   // ===== Einstellungen =====================================================
   const KAMMERTON_HZ = 440;   // Vorgabe für a1 in Hz; auf der Seite änderbar (Tipp auf „a¹ = 440 Hz“)
-  const START_MIDI   = 69;    // Startton der Temperaturoktave (69 = a1); Oktave = Startton bis Startton + 12
+  const START_MIDI   = 69;    // Startton des Quintenzirkels (69 = a1); Oktave = Startton bis Startton + 12
   // =========================================================================
 
-  const A1_MIDI  = 69;
-  const TONNAMEN = ["c", "cis", "d", "dis", "e", "f", "fis", "g", "gis", "a", "b", "h"];
+  const A1_MIDI = 69;
   const HZ_MIN = 200, HZ_MAX = 520;               // erlaubter Bereich für den Kammerton
-  const SPEICHER = "stimmlicht.kammerton";
+  const SPEICHER        = "stimmlicht.kammerton";
+  const SPEICHER_ZIRKEL = "stimmlicht.zirkel";
 
-  // Kammerton: zuletzt auf diesem Gerät eingestellter Wert, sonst die Vorgabe
+  // Reine Intervalle nach Halbtonabstand und das Verhältnis ihrer Koinzidenzteiltöne (oben : unten).
+  // Schwebung = |unten · f_oberer Ton − oben · f_unterer Ton|, z. B. Quinte 3:2 → |2·f_oben − 3·f_unten|.
+  // Positiv heißt: weiter als rein, negativ: enger als rein.
+  const INTERVALLE = {
+    3:  { art: "kleine Terz", oben: 6, unten: 5 },
+    4:  { art: "Terz",        oben: 5, unten: 4 },
+    5:  { art: "Quarte",      oben: 4, unten: 3 },
+    7:  { art: "Quinte",      oben: 3, unten: 2 },
+    9:  { art: "Sexte",       oben: 5, unten: 3 },
+    12: { art: "Oktave",      oben: 2, unten: 1 }
+  };
+
+  // Quintenzirkel innerhalb der Temperaturoktave:
+  // Quinte aufwärts, solange der neue Ton in der Oktave liegt, sonst Quarte abwärts.
+  function quintenFolge() {
+    const folge = [];
+    let von = START_MIDI;
+    for (let i = 0; i < 12; i++) {
+      const nach = von + 7 <= START_MIDI + 12 ? von + 7 : von - 5;
+      folge.push({ von: von, nach: nach, proben: [] });
+      von = nach;
+    }
+    return folge;
+  }
+
+  // Die wählbaren Stimmzirkel. MIDI-Nummern: e = 52, f = 53, … a = 57, … c¹ = 60, … e¹ = 64.
+  const ZIRKEL = {
+    quinten: {
+      titel: "Quintenzirkel",
+      tonnamen: ["c", "cis", "d", "dis", "e", "f", "fis", "g", "gis", "a", "b", "h"],
+      unten: START_MIDI, oben: START_MIDI + 12,
+      bezugston: START_MIDI,
+      folge: quintenFolge()
+    },
+    // Steinway-Stimmzirkel von e–e¹ nach Ulrich van Aaken (EUROPIANO 1985):
+    // mit drei großen Terzen und Kontrollintervallen („Proben“) nach jedem Schritt.
+    steinway: {
+      titel: "Steinway-Zirkel",
+      tonnamen: ["c", "cis", "d", "es", "e", "f", "fis", "g", "gis", "a", "b", "h"],
+      unten: 52, oben: 64,
+      bezugston: 57,
+      folge: [
+        { von: 57, nach: 53, proben: [] },                               //  1 Terz a → f
+        { von: 57, nach: 62, proben: [[53, 62]] },                       //  2 Quarte a → d¹ · Sexte f–d¹
+        { von: 53, nach: 58, proben: [[58, 62]] },                       //  3 Quarte f → b · Terz b–d¹
+        { von: 62, nach: 55, proben: [[55, 58]] },                       //  4 Quarte d¹ → g · kleine Terz g–b
+        { von: 55, nach: 60, proben: [[53, 60], [57, 60]] },             //  5 Quarte g → c¹ · Quinte f–c¹, kleine Terz a–c¹
+        { von: 58, nach: 54, proben: [] },                               //  6 Terz b → fis
+        { von: 54, nach: 59, proben: [[55, 59], [53, 62]] },             //  7 Quarte fis → h · Terz g–h, Sexte f–d¹
+        { von: 59, nach: 64, proben: [[57, 64], [60, 64], [55, 64]] },   //  8 Quarte h → e¹ · Quinte a–e¹, Terz c¹–e¹, Sexte g–e¹
+        { von: 64, nach: 52, proben: [[52, 57], [52, 59]] },             //  9 Oktave e¹ → e · Quarte e–a, Quinte e–h
+        { von: 52, nach: 56, proben: [[56, 60]] },                       // 10 Terz e → gis · Terz gis–c¹
+        { von: 56, nach: 61, proben: [[57, 61], [54, 61], [52, 61]] },   // 11 Quarte gis → cis¹ · Terz a–cis¹, Quinte fis–cis¹, Sexte e–cis¹
+        { von: 58, nach: 63, proben: [] }                                // 12 Quarte b → es¹
+      ]
+    }
+  };
+
+  // Kammerton und Zirkel: zuletzt auf diesem Gerät eingestellt, sonst die Vorgabe
   let kammerton = KAMMERTON_HZ;
+  let gemerkterZirkel = "quinten";
   try {
     const gemerkt = parseFloat(localStorage.getItem(SPEICHER));
     if (gemerkt >= HZ_MIN && gemerkt <= HZ_MAX) kammerton = gemerkt;
+    gemerkterZirkel = localStorage.getItem(SPEICHER_ZIRKEL) || gemerkterZirkel;
   } catch (e) {}
+
+  let zirkelId = "quinten";
+  let tonnamen = ZIRKEL.quinten.tonnamen;
 
   // Gleichstufige Frequenz zur MIDI-Notennummer n
   function frequenz(n) {
     return kammerton * Math.pow(2, (n - A1_MIDI) / 12);
   }
 
+  function klasse(n) { return ((n % 12) + 12) % 12; }
+
   // Deutscher Tonname in Helmholtz-Schreibweise (c1 = MIDI 60), zerlegt in Name und Oktavziffer
   function tonTeile(n) {
-    const name = TONNAMEN[((n % 12) + 12) % 12];
+    const name = tonnamen[klasse(n)];
     const oktave = Math.floor(n / 12) - 4;
     if (oktave >= 1) return { name: name, hoch: String(oktave), tief: "" };      // a1, e2 …
     if (oktave === 0) return { name: name, hoch: "", tief: "" };                 // kleine Oktave: c
@@ -353,6 +468,12 @@
   function tonText(n) {
     const t = tonTeile(n);
     return t.name + t.hoch + t.tief;
+  }
+
+  // Tonname als reiner Text mit hochgestellter Ziffer (für die Auswahlliste): a¹
+  function tonSchrift(n) {
+    const t = tonTeile(n);
+    return t.name + t.hoch.replace(/\d/g, function (z) { return "⁰¹²³⁴⁵⁶⁷⁸⁹"[z]; }) + t.tief;
   }
 
   // Tonname mit hochgestellter Oktavziffer (a¹), wie im Orgelbau üblich
@@ -368,32 +489,37 @@
     return stueck;
   }
 
-  // Quintenzirkel innerhalb der Temperaturoktave:
-  // Quinte aufwärts, solange der neue Ton in der Oktave liegt, sonst Quarte abwärts.
-  function schritteBerechnen() {
-    const liste = [];
-    let von = START_MIDI;
-    for (let i = 0; i < 12; i++) {
-      const istQuinte = von + 7 <= START_MIDI + 12;
-      const nach   = istQuinte ? von + 7 : von - 5;
-      const fUnten = frequenz(Math.min(von, nach));
-      const fOben  = frequenz(Math.max(von, nach));
-      // Koinzidenzteiltöne: Quinte 3:2, Quarte 4:3
-      const differenz = istQuinte ? 2 * fOben - 3 * fUnten
-                                  : 3 * fOben - 4 * fUnten;
-      liste.push({
-        art:  istQuinte ? "Quinte" : "Quarte",
-        von:  von,
-        nach: nach,
-        eng:  differenz < 0,            // oberer Ton zu tief = Intervall zu eng
-        rate: Math.abs(differenz)       // Schwebungen pro Sekunde
-      });
-      von = nach;
-    }
-    return liste;
+  // Schwebung zwischen zwei Tönen über die Koinzidenzteiltöne
+  function intervall(a, b) {
+    const unten = Math.min(a, b), oben = Math.max(a, b);
+    const typ = INTERVALLE[oben - unten];
+    const differenz = typ.unten * frequenz(oben) - typ.oben * frequenz(unten);
+    const rein = Math.abs(differenz) < 1e-6;
+    return {
+      art: typ.art,
+      unten: unten,
+      oben: oben,
+      rate: rein ? 0 : Math.abs(differenz),                        // Schwebungen pro Sekunde
+      richtung: rein ? "rein" : differenz < 0 ? "eng" : "weit"
+    };
   }
 
-  let schritte = schritteBerechnen();
+  function schritteBerechnen() {
+    return ZIRKEL[zirkelId].folge.map(function (f) {
+      const s = intervall(f.von, f.nach);
+      s.von = f.von;
+      s.nach = f.nach;
+      s.proben = f.proben.map(function (p) { return intervall(p[0], p[1]); });
+      return s;
+    });
+  }
+
+  function zirkelName(id) {
+    const z = ZIRKEL[id];
+    return z.titel + " " + tonSchrift(z.unten) + "–" + tonSchrift(z.oben);
+  }
+
+  let schritte = [];
   let aktuell = 0;
   let startzeit = performance.now();
 
@@ -404,8 +530,9 @@
   const elIntervall = document.getElementById("intervall");
   const elRichtung  = document.getElementById("richtung");
   const elZahl      = document.getElementById("zahl");
+  const elProben    = document.getElementById("proben");
 
-  // ----- Ring aufbauen: 12 Bögen (Intervalle) und 12 Tonnamen wie auf einem Zifferblatt -----
+  // ----- Ring: die zwölf Töne im Quintenzirkel (a oben), dazwischen zwölf Bögen -----
   const RADIUS = 89;      // im Koordinatensystem des SVG (−100 … 100)
   const LUECKE = 9;       // Grad Abstand zwischen Bogen und Tonname
   const boegen = [];
@@ -416,48 +543,117 @@
     return [radius * Math.sin(w), -radius * Math.cos(w)];   // 0° = oben, im Uhrzeigersinn
   }
 
-  schritte.forEach(function (s, i) {
-    const a = punkt(i * 30 + LUECKE, RADIUS);
-    const b = punkt((i + 1) * 30 - LUECKE, RADIUS);
+  // Platz eines Tons im Ring: a = 0, e = 1, h = 2 … (Quinten im Uhrzeigersinn)
+  function platz(n) { return (((klasse(n) - 9) * 7) % 12 + 12) % 12; }
+
+  // Bögen auf dem kürzeren Weg zwischen zwei Tönen (Quinte/Quarte: 1 Bogen, Terz: 4, Oktave: keiner)
+  function pfad(von, nach) {
+    const a = platz(von), b = platz(nach);
+    const vor = (b - a + 12) % 12;
+    const liste = [];
+    if (vor <= 6) for (let i = 0; i < vor; i++) liste.push((a + i) % 12);
+    else          for (let i = 0; i < 12 - vor; i++) liste.push((b + i) % 12);
+    return liste;
+  }
+
+  // Erster Schritt, in dem ein Ton dieser Tonklasse gestimmt wird (der Bezugston führt zu Schritt 1)
+  function schrittZuTon(tk) {
+    for (let i = 0; i < schritte.length; i++) if (klasse(schritte[i].nach) === tk) return i;
+    return 0;
+  }
+
+  for (let k = 0; k < 12; k++) {
+    const a = punkt(k * 30 + LUECKE, RADIUS);
+    const b = punkt((k + 1) * 30 - LUECKE, RADIUS);
     const bogen = document.createElementNS("http://www.w3.org/2000/svg", "path");
     bogen.setAttribute("d", "M" + a[0].toFixed(2) + " " + a[1].toFixed(2) +
       " A" + RADIUS + " " + RADIUS + " 0 0 1 " + b[0].toFixed(2) + " " + b[1].toFixed(2));
     bahn.appendChild(bogen);
     boegen.push(bogen);
 
-    const ort = punkt((i + 1) * 30, RADIUS / 2);            // in Prozent der Zirkelgröße
+    const tk  = (9 + 7 * k) % 12;                          // Tonklasse an diesem Platz
+    const ort = punkt(k * 30, RADIUS / 2);                  // in Prozent der Zirkelgröße
     const ton = document.createElement("button");
     ton.type = "button";
     ton.className = "ton";
-    ton.textContent = tonTeile(s.nach).name;
+    ton.dataset.klasse = tk;
     ton.style.left = (50 + ort[0]) + "%";
     ton.style.top  = (50 + ort[1]) + "%";
-    ton.setAttribute("aria-label", "Schritt " + (i + 1) + ": " + s.art + " " + tonText(s.von) + " – " + tonText(s.nach));
-    ton.addEventListener("click", function () { gehe(i); });
+    ton.addEventListener("click", function () { gehe(schrittZuTon(tk)); });
     zirkel.appendChild(ton);
     toene.push(ton);
-  });
+  }
+
+  function ringBeschriften() {
+    toene.forEach(function (ton) {
+      const tk = Number(ton.dataset.klasse);
+      const i = schrittZuTon(tk), s = schritte[i];
+      ton.textContent = tonnamen[tk];
+      ton.setAttribute("aria-label", tonnamen[tk] + ": zu Schritt " + (i + 1) + ", " +
+        s.art + " " + tonText(s.von) + " – " + tonText(s.nach));
+    });
+  }
 
   // ----- Anzeige -----
+  function probeZeile(p) {
+    const zeile = document.createElement("p");
+    const vor = document.createElement("span");
+    vor.className = "vor";
+    vor.textContent = "Probe: ";
+    zeile.appendChild(vor);
+    zeile.appendChild(document.createTextNode(p.art + " "));
+    const toene2 = document.createElement("span");
+    toene2.className = "ton2";
+    toene2.appendChild(tonKnoten(p.unten));
+    toene2.appendChild(document.createTextNode(" – "));
+    toene2.appendChild(tonKnoten(p.oben));
+    zeile.appendChild(toene2);
+    zeile.appendChild(document.createTextNode("  "));
+    const richtung = document.createElement("span");
+    richtung.className = p.richtung;
+    richtung.textContent = p.richtung;
+    zeile.appendChild(richtung);
+    const wert = document.createElement("span");
+    wert.className = "wert";
+    wert.textContent = "  " + p.rate.toFixed(2).replace(".", ",") + "/s";
+    zeile.appendChild(wert);
+    return zeile;
+  }
+
   function anzeigen() {
     const s = schritte[aktuell];
-    const bezug = (aktuell + schritte.length - 1) % schritte.length;   // Ton, von dem aus gestimmt wird
 
-    document.body.className = s.eng ? "eng" : "weit";
+    document.body.className = s.richtung;
 
     elSchritt.textContent = "Schritt " + (aktuell + 1) + "/" + schritte.length;
     elIntervall.textContent = s.art + " ";
     elIntervall.appendChild(tonKnoten(s.von));
     elIntervall.appendChild(document.createTextNode(" – "));
     elIntervall.appendChild(tonKnoten(s.nach));
-    elRichtung.textContent = s.eng ? "eng" : "weit";
+    elRichtung.textContent = s.richtung;
     elZahl.textContent = s.rate.toFixed(2).replace(".", ",");
 
-    for (let i = 0; i < schritte.length; i++) {
-      boegen[i].setAttribute("class", i === aktuell ? "aktiv" : i < aktuell ? "fertig" : "");
-      toene[i].className = "ton" + (i === aktuell ? " ziel" : i === bezug ? " bezug" : i < aktuell ? " fertig" : "");
-      if (i === aktuell) toene[i].setAttribute("aria-current", "step");
-      else toene[i].removeAttribute("aria-current");
+    elProben.textContent = "";
+    s.proben.forEach(function (p) { elProben.appendChild(probeZeile(p)); });
+
+    // Ring: Zielton farbig, Ausgangston hell, schon gestimmte Töne halbhell
+    const gestimmt = { };
+    gestimmt[klasse(ZIRKEL[zirkelId].bezugston)] = true;
+    const fertigeBoegen = { };
+    for (let i = 0; i < aktuell; i++) {
+      gestimmt[klasse(schritte[i].nach)] = true;
+      pfad(schritte[i].von, schritte[i].nach).forEach(function (b) { fertigeBoegen[b] = true; });
+    }
+    const aktiveBoegen = { };
+    pfad(s.von, s.nach).forEach(function (b) { aktiveBoegen[b] = true; });
+
+    for (let k = 0; k < 12; k++) {
+      boegen[k].setAttribute("class", aktiveBoegen[k] ? "aktiv" : fertigeBoegen[k] ? "fertig" : "");
+      const tk = Number(toene[k].dataset.klasse);
+      const ziel = tk === klasse(s.nach);
+      toene[k].className = "ton" + (ziel ? " ziel" : tk === klasse(s.von) ? " bezug" : gestimmt[tk] ? " fertig" : "");
+      if (ziel) toene[k].setAttribute("aria-current", "step");
+      else toene[k].removeAttribute("aria-current");
     }
 
     startzeit = performance.now();      // jeder Schritt beginnt hell
@@ -484,6 +680,7 @@
   // Pfeiltasten (auch Bluetooth-Fußtaster zum Umblättern)
   document.addEventListener("keydown", function (e) {
     if (e.altKey || e.ctrlKey || e.metaKey) return;
+    if (e.target && e.target.tagName === "SELECT") return;
     if (e.key === "ArrowRight" || e.key === "ArrowDown" || e.key === "PageDown") { e.preventDefault(); gehe(aktuell + 1); }
     if (e.key === "ArrowLeft"  || e.key === "ArrowUp"   || e.key === "PageUp")   { e.preventDefault(); gehe(aktuell - 1); }
   });
@@ -496,6 +693,37 @@
     navigator.wakeLock.request("screen").then(function (sperre) { wachSperre = sperre; }).catch(function () {});
   }
   document.addEventListener("visibilitychange", wachHalten);
+
+  // ----- Zirkel wählen: Tipp auf den Zirkelnamen öffnet die Auswahl -----
+  const elZirkelname = document.getElementById("zirkelname");
+  const zirkelwahl   = document.getElementById("zirkelwahl");
+
+  Object.keys(ZIRKEL).forEach(function (id) {
+    const option = document.createElement("option");
+    option.value = id;
+    option.textContent = zirkelName(id);
+    zirkelwahl.appendChild(option);
+  });
+
+  function zirkelWaehlen(id) {
+    if (!ZIRKEL[id]) id = "quinten";
+    zirkelId = id;
+    tonnamen = ZIRKEL[id].tonnamen;
+    try { localStorage.setItem(SPEICHER_ZIRKEL, id); } catch (e) {}
+    zirkelwahl.value = id;
+    elZirkelname.textContent = zirkelName(id);
+    schritte = schritteBerechnen();
+    elProben.hidden = !schritte.some(function (s) { return s.proben.length > 0; });
+    aktuell = 0;
+    ringBeschriften();
+    anzeigen();
+    messen();
+  }
+
+  zirkelwahl.addEventListener("change", function () {
+    zirkelWaehlen(zirkelwahl.value);
+    zirkelwahl.blur();
+  });
 
   // ----- Kammerton einstellen: Tipp auf „a¹ = 440 Hz“ öffnet ein Zahlenfeld -----
   const elKammerton = document.getElementById("kammerton");
@@ -561,9 +789,8 @@
   if ("ResizeObserver" in window) new ResizeObserver(messen).observe(buehne);
 
   // ----- Start -----
-  messen();
+  zirkelWaehlen(gemerkterZirkel);
   kammertonZeigen();
-  anzeigen();
   wachHalten();
   requestAnimationFrame(bild);
 
