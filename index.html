@@ -215,6 +215,14 @@
   .bahn path.fertig { stroke: rgba(255, 255, 255, .36); }
   .bahn path.aktiv  { stroke: var(--akzent); stroke-width: 2.5px; }
 
+  /* Proben als innere Bögen von Ton zu Ton; antippen lässt das Licht in ihrem Takt pulsieren */
+  .bahn path.pb      { stroke-width: 2px; opacity: .42; transition: opacity .2s; }
+  .bahn path.pb.eng  { stroke: var(--orange); }
+  .bahn path.pb.weit { stroke: var(--blau); }
+  .bahn path.pb.rein { stroke: #efe2cc; }
+  .bahn path.pb.an   { opacity: 1; stroke-width: 3px; }
+  .bahn path.treffer { stroke: transparent; stroke-width: 16px; pointer-events: stroke; cursor: pointer; }
+
   /* Die zwölf Töne im Quintenzirkel: tippen springt zu dem Schritt, in dem der Ton gestimmt wird */
   .ton {
     position: absolute;
@@ -233,6 +241,9 @@
   .ton.bezug  { color: var(--text); }
   .ton.ziel   { color: var(--akzent); font-weight: 700; }
   .ton:active { color: var(--text); }
+  .ton.probe-eng  { color: var(--orange); }
+  .ton.probe-weit { color: var(--blau); }
+  .ton.probe-rein { color: #efe2cc; }
 
   /* ---------- Angaben ---------- */
   /* Jede Zeile hat eine feste Höhe, damit der Block bei jedem Schritt gleich hoch ist */
@@ -601,6 +612,69 @@
     toene.push(ton);
   }
 
+  // Proben-Bögen: innere Bahnen (eine je Probe), auf dem kürzeren Weg von Ton zu Ton
+  const probenGruppe = document.createElementNS("http://www.w3.org/2000/svg", "g");
+  bahn.appendChild(probenGruppe);
+  let probenBoegen = [];
+
+  function probenRadius(i) { return 78 - 7 * i; }
+
+  function probenStrecke(p) {
+    const a = platz(p.unten), b = platz(p.oben);
+    const vor = (b - a + 12) % 12;
+    return vor <= 6 ? { start: a * 30, spanne: vor * 30 } : { start: b * 30, spanne: (12 - vor) * 30 };
+  }
+
+  function bogenPfad(start, spanne, radius) {
+    const a = punkt(start, radius), b = punkt(start + spanne, radius);
+    return "M" + a[0].toFixed(2) + " " + a[1].toFixed(2) + " A" + radius + " " + radius +
+      " 0 " + (spanne > 180 ? 1 : 0) + " 1 " + b[0].toFixed(2) + " " + b[1].toFixed(2);
+  }
+
+  function probenZeichnen(s) {
+    probenGruppe.textContent = "";
+    probenBoegen = s.proben.map(function (p, i) {
+      const st = probenStrecke(p);
+      const d = bogenPfad(st.start, st.spanne, probenRadius(i));
+      const sichtbar = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      sichtbar.setAttribute("d", d);
+      sichtbar.setAttribute("class", "pb " + p.richtung);
+      const treffer = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      treffer.setAttribute("d", d);
+      treffer.setAttribute("class", "treffer");
+      probenGruppe.appendChild(sichtbar);
+      probenGruppe.appendChild(treffer);
+      return sichtbar;
+    });
+  }
+
+  // Tipp in den Zirkel: auf einen Proben-Bogen = diese Probe, aufs Licht = zurück zum Hauptintervall.
+  // Ausgewertet wird die Lage des Tipps, damit sich überlappende Bögen sauber trennen lassen.
+  // Läuft vor den Tonnamen (Capture): ein Tipp innen auf einen Bogen springt nicht zu einem anderen Schritt.
+  zirkel.addEventListener("click", function (e) {
+    const s = schritte[aktuell];
+    const rahmen = zirkel.getBoundingClientRect();
+    const x = (e.clientX - rahmen.left) / rahmen.width * 200 - 100;
+    const y = (e.clientY - rahmen.top) / rahmen.height * 200 - 100;
+    const r = Math.sqrt(x * x + y * y);
+    if (r < 58) { if (probeAktiv >= 0) probeWaehlen(-1); return; }
+    if (r > 83) return;                                       // außen: Tonname
+    let grad = Math.atan2(x, -y) * 180 / Math.PI;
+    if (grad < 0) grad += 360;
+    let beste = -1, abstand = Infinity;
+    s.proben.forEach(function (p, i) {
+      const st = probenStrecke(p);
+      const rel = ((grad - st.start) % 360 + 360) % 360;
+      if (rel > st.spanne + 8 && rel < 352) return;          // Tipp liegt nicht neben diesem Bogen
+      const d = Math.abs(probenRadius(i) - r);
+      if (d < abstand) { abstand = d; beste = i; }
+    });
+    if (beste >= 0) {
+      e.stopPropagation();
+      probeWaehlen(probeAktiv === beste ? -1 : beste);
+    }
+  }, true);
+
   function ringBeschriften() {
     toene.forEach(function (ton) {
       const tk = Number(ton.dataset.klasse);
@@ -656,7 +730,7 @@
 
     elProben.textContent = "";
     s.proben.forEach(function (p, i) { elProben.appendChild(probeZeile(p, i)); });
-    probeWaehlen(-1);                   // das Licht folgt zunächst dem Hauptintervall
+    probenZeichnen(s);
 
     // Ring: Zielton farbig, Ausgangston hell, schon gestimmte Töne halbhell
     const gestimmt = { };
@@ -678,7 +752,7 @@
       else toene[k].removeAttribute("aria-current");
     }
 
-    startzeit = performance.now();      // jeder Schritt beginnt hell
+    probeWaehlen(-1);                   // das Licht folgt zunächst dem Hauptintervall
   }
 
   // Probe antippen: das Licht pulsiert in ihrem Takt und ihrer Farbe; nochmal tippen = zurück
@@ -693,9 +767,16 @@
       zeilen[k].classList.toggle("an", k === probeAktiv);
       zeilen[k].setAttribute("aria-pressed", k === probeAktiv ? "true" : "false");
     }
+    probenBoegen.forEach(function (b, k) { b.classList.toggle("an", k === probeAktiv); });
     elAngaben.classList.toggle("probe-an", probeAktiv >= 0);
-    licht.className = "licht" + (probeAktiv >= 0 ? " " + s.proben[probeAktiv].richtung : "");
-    startzeit = performance.now();
+    const p = probeAktiv >= 0 ? s.proben[probeAktiv] : null;
+    licht.className = "licht" + (p ? " " + p.richtung : "");
+    toene.forEach(function (ton) {
+      ton.classList.remove("probe-eng", "probe-weit", "probe-rein");
+      const tk = Number(ton.dataset.klasse);
+      if (p && (tk === klasse(p.unten) || tk === klasse(p.oben))) ton.classList.add("probe-" + p.richtung);
+    });
+    startzeit = performance.now();      // beginnt hell
   }
 
   function lichtRate() {
