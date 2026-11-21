@@ -30,10 +30,11 @@
     --sans:  system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
   }
 
-  /* Orange = eng, Blau = weit, warmes Weiß = rein (Oktave) */
-  body.eng  { --rgb: 255, 140, 26;  --akzent: var(--orange); --kern: #ffe0b3; --mitte: #ffa53f; --rand: #ff8514; }
-  body.weit { --rgb: 47, 140, 255;  --akzent: var(--blau);   --kern: #dcecff; --mitte: #66afff; --rand: #2687ff; }
-  body.rein { --rgb: 255, 236, 205; --akzent: #efe2cc;       --kern: #fffaf2; --mitte: #f4e6cf; --rand: #e6cfab; }
+  /* Orange = eng, Blau = weit, warmes Weiß = rein (Oktave).
+     body trägt die Farbe des Hauptintervalls; das Licht kann eine eigene tragen (angetippte Probe). */
+  body.eng,  .licht.eng  { --rgb: 255, 140, 26;  --akzent: var(--orange); --kern: #ffe0b3; --mitte: #ffa53f; --rand: #ff8514; }
+  body.weit, .licht.weit { --rgb: 47, 140, 255;  --akzent: var(--blau);   --kern: #dcecff; --mitte: #66afff; --rand: #2687ff; }
+  body.rein, .licht.rein { --rgb: 255, 236, 205; --akzent: #efe2cc;       --kern: #fffaf2; --mitte: #f4e6cf; --rand: #e6cfab; }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -280,14 +281,29 @@
     margin-right: .12em;
   }
 
-  /* Kontrollintervalle (nur bei Zirkeln, die welche haben): Platz für drei Zeilen, immer gleich hoch */
+  /* Kontrollintervalle (nur bei Zirkeln, die welche haben): Platz für drei Zeilen, immer gleich hoch.
+     Antippen lässt das Licht im Takt der Probe pulsieren. */
   #proben {
-    height: 66px;
-    padding-top: 8px;
+    height: 82px;
+    padding-top: 6px;
     font-size: .8rem;
-    line-height: 19px;
     color: var(--leise);
   }
+  .probe {
+    display: block;
+    height: 25px;
+    margin: 0 auto 1px;
+    padding: 0 11px;
+    line-height: 25px;
+    border-radius: 13px;
+    white-space: nowrap;
+    transition: background .15s, color .15s;
+  }
+  .probe.an { background: rgba(255, 255, 255, .1); color: var(--text); }
+  #rate, #richtung, #intervall { transition: opacity .2s; }
+  .angaben.probe-an #intervall,
+  .angaben.probe-an #richtung,
+  .angaben.probe-an #rate { opacity: .38; }
   #proben .vor  { opacity: .7; }
   #proben .ton2 { color: var(--text); }
   #proben .eng  { color: var(--orange); font-style: italic; }
@@ -320,6 +336,7 @@
 
   @media (hover: hover) {
     .ton:hover { color: var(--text); }
+    .probe:hover { background: rgba(255, 255, 255, .06); }
     nav button:hover { background: rgba(255, 255, 255, .11); }
   }
 
@@ -595,8 +612,12 @@
   }
 
   // ----- Anzeige -----
-  function probeZeile(p) {
-    const zeile = document.createElement("p");
+  function probeZeile(p, i) {
+    const zeile = document.createElement("button");
+    zeile.type = "button";
+    zeile.className = "probe";
+    zeile.setAttribute("aria-pressed", "false");
+    zeile.addEventListener("click", function () { probeWaehlen(probeAktiv === i ? -1 : i); });
     const vor = document.createElement("span");
     vor.className = "vor";
     vor.textContent = "Probe: ";
@@ -634,7 +655,8 @@
     elZahl.textContent = s.rate.toFixed(2).replace(".", ",");
 
     elProben.textContent = "";
-    s.proben.forEach(function (p) { elProben.appendChild(probeZeile(p)); });
+    s.proben.forEach(function (p, i) { elProben.appendChild(probeZeile(p, i)); });
+    probeWaehlen(-1);                   // das Licht folgt zunächst dem Hauptintervall
 
     // Ring: Zielton farbig, Ausgangston hell, schon gestimmte Töne halbhell
     const gestimmt = { };
@@ -659,6 +681,28 @@
     startzeit = performance.now();      // jeder Schritt beginnt hell
   }
 
+  // Probe antippen: das Licht pulsiert in ihrem Takt und ihrer Farbe; nochmal tippen = zurück
+  let probeAktiv = -1;
+  const elAngaben = document.getElementById("angaben");
+
+  function probeWaehlen(i) {
+    const s = schritte[aktuell];
+    probeAktiv = i >= 0 && i < s.proben.length ? i : -1;
+    const zeilen = elProben.children;
+    for (let k = 0; k < zeilen.length; k++) {
+      zeilen[k].classList.toggle("an", k === probeAktiv);
+      zeilen[k].setAttribute("aria-pressed", k === probeAktiv ? "true" : "false");
+    }
+    elAngaben.classList.toggle("probe-an", probeAktiv >= 0);
+    licht.className = "licht" + (probeAktiv >= 0 ? " " + s.proben[probeAktiv].richtung : "");
+    startzeit = performance.now();
+  }
+
+  function lichtRate() {
+    const s = schritte[aktuell];
+    return probeAktiv >= 0 ? s.proben[probeAktiv].rate : s.rate;
+  }
+
   function gehe(nummer) {
     aktuell = (nummer + schritte.length) % schritte.length;
     anzeigen();
@@ -669,7 +713,7 @@
   // Helligkeit ∝ |cos(π · Schwebungsrate · t)|
   function bild(jetzt) {
     const t = (jetzt - startzeit) / 1000;
-    licht.style.opacity = Math.abs(Math.cos(Math.PI * schritte[aktuell].rate * t));
+    licht.style.opacity = Math.abs(Math.cos(Math.PI * lichtRate() * t));
     requestAnimationFrame(bild);
   }
 

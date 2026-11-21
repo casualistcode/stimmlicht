@@ -38,6 +38,9 @@ Nach einer Änderung an der Seite zeigt die App die neue Fassung beim zweiten Ö
 - **Zirkel wählen:** In der Kopfzeile auf den Zirkelnamen tippen (z. B.
   „Quintenzirkel a¹–a²“) und den anderen auswählen. Die Wahl bleibt auf dem Gerät
   gespeichert.
+- **Proben ansehen (Steinway-Zirkel):** Auf eine Probe-Zeile tippen – das Licht
+  pulsiert dann im Takt und in der Farbe dieser Probe, das Hauptintervall wird
+  blasser. Nochmal tippen oder weiterschalten führt zurück zum Hauptintervall.
 - **Springen:** Auf einen Tonnamen am Ring tippen – die Seite springt zu dem Schritt,
   in dem dieser Ton gestimmt wird. Der Ring zeigt nebenbei, wie weit man im Zirkel ist
   und welches Intervall gerade gestimmt wird.
