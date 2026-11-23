@@ -13,7 +13,8 @@ Drei Stimmzirkel stehen zur Wahl:
   [„Der Steinway-Stimmzirkel von e–e'“](https://www.ulrich-van-aaken.de/blind/DerSteinwayStimmzirkelvonee)
   (EUROPIANO 1985). Beginnt mit der Terz f–a, stimmt drei große Terzen direkt und
   zeigt nach den meisten Schritten Kontrollintervalle („Proben“) mit ihrer Schwebung.
-- **Vallotti d–d¹ (4′):** ungleichstufige Stimmung, Tasten d–d¹ auf einem 4′-Register. Die Quinten F–C–G–D–A–E–H sind um je
+- **Vallotti:** ungleichstufige Stimmung, im 4′ auf den Tasten D–d (große Oktave; Start auf
+  Taste A, dem ersten a von unten, klingend 220 Hz). Die Quinten F–C–G–D–A–E–H sind um je
   1/6 pythagoreisches Komma verengt, H–Fis–Cis–Gis–Dis–B–F sind rein. Bei reinen
   Intervallen leuchtet das Licht ruhig – stimmen, bis keine Schwebung mehr da ist.
 
@@ -154,7 +155,7 @@ Anmerkungen zur Umsetzung:
 - Proben, die der Artikel als Vergleich zu früheren Schritten nennt, sind nur
   teilweise übernommen (höchstens drei pro Schritt).
 
-### Vallotti d–d¹ (4′)
+### Vallotti
 
 Abweichung von gleichstufig in Cent (a = 0):
 
@@ -162,19 +163,20 @@ Abweichung von gleichstufig in Cent (a = 0):
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | +5,87 | 0 | +1,96 | +3,91 | −1,96 | +7,82 | −1,96 | +3,91 | +1,96 | 0 | +5,87 | −3,91 |
 
-Tasten im 4′ (Taste a = 440 Hz). Von a aus Terz, Quarte und Quinte abwärts, dann von f aus die reinen Quinten bis h,
-zuletzt die verengten Quinten d–g–c¹:
+Tasten im 4′ (Taste A = erstes a von unten, klingt 220 Hz). Von A aus Terz, Quarte und
+Quinte abwärts – mit 3 / 1,5 / 1 Schwebungen gut hörbar –, dann von F aus die reinen
+Quinten bis H, zuletzt die verengten Quinten D–G–c:
 
 | Schritt | gestimmt | | Schw./s | Proben (Schw./s) |
 |---|---|---|---|---|
-| 1 | Terz a → f | weit | 5,95 | – |
-| 2 | Quarte a → e | weit | 2,98 | – |
-| 3 | Quinte a → d | eng | 1,99 | kleine Terz d–f eng 9,93 |
-| 4 | Quarte f → b | rein | 0 | – |
-| 5 | Quinte b → es | rein | 0 | – |
-| 6 | Quarte es → gis | rein | 0 | – |
-| 7 | Quarte gis → cis1 | rein | 0 | – |
-| 8 | Quinte cis1 → fis | rein | 0 | Terz d–fis weit 8,32 |
-| 9 | Quarte fis → h | rein | 0 | Quinte e–h eng 2,23 |
-| 10 | Quarte d → g | weit | 2,66 | Terz g–h weit 6,67 |
-| 11 | Quarte g → c1 | weit | 3,55 | Quinte f–c1 eng 2,37 · Terz gis–c1 weit 21,24 · Terz a–cis1 weit 17,46 |
+| 1 | Terz A → F | weit | 2,98 | – |
+| 2 | Quarte A → E | weit | 1,49 | – |
+| 3 | Quinte A → D | eng | 0,99 | kleine Terz D–F eng 4,97 |
+| 4 | Quarte F → B | rein | 0 | – |
+| 5 | Quinte B → Es | rein | 0 | – |
+| 6 | Quarte Es → Gis | rein | 0 | – |
+| 7 | Quarte Gis → cis | rein | 0 | – |
+| 8 | Quinte cis → Fis | rein | 0 | Terz D–Fis weit 4,16 |
+| 9 | Quarte Fis → H | rein | 0 | Quinte E–H eng 1,11 |
+| 10 | Quarte D → G | weit | 1,33 | Terz G–H weit 3,33 |
+| 11 | Quarte G → c | weit | 1,78 | Quinte F–c eng 1,19 · Terz Gis–c weit 10,62 · Terz A–cis weit 8,73 |

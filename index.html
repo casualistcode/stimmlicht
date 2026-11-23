@@ -483,27 +483,29 @@
         { von: 58, nach: 63, proben: [] }                                // 12 Quarte b → es¹
       ]
     },
-    // Vallotti im 4', Tasten d–d¹ (klingend d¹–d²): von Taste a (440 Hz) aus Terz, Quarte und
-    // Quinte abwärts, dann von f aus die reinen Quinten bis h, zuletzt die verengten Quinten d–g–c¹.
+    // Vallotti im 4', Tasten D–d (klingend d–d¹): von Taste A (erstes a von unten, klingt 220 Hz)
+    // aus Terz, Quarte und Quinte abwärts – gut hörbar mit 3 / 1,5 / 1 Schwebungen –, dann von F
+    // aus die reinen Quinten bis H, zuletzt die verengten Quinten D–G–c.
     vallotti: {
       titel: "Vallotti",
+      name: "Vallotti",
       fuss: 4,
       tonnamen: ["c", "cis", "d", "es", "e", "f", "fis", "g", "gis", "a", "b", "h"],
       abweichung: vallottiAbweichung(),
-      unten: 62, oben: 74,
-      bezugston: 69,
+      unten: 50, oben: 62,
+      bezugston: 57,
       folge: [                                                           // Kommentare: Tasten im 4'
-        { von: 69, nach: 65, proben: [] },                               //  1 Terz a → f
-        { von: 69, nach: 64, proben: [] },                               //  2 Quarte a → e
-        { von: 69, nach: 62, proben: [[62, 65]] },                       //  3 Quinte a → d · kleine Terz d–f
-        { von: 65, nach: 70, proben: [] },                               //  4 Quarte f → b (rein)
-        { von: 70, nach: 63, proben: [] },                               //  5 Quinte b → es (rein)
-        { von: 63, nach: 68, proben: [] },                               //  6 Quarte es → gis (rein)
-        { von: 68, nach: 73, proben: [] },                               //  7 Quarte gis → cis¹ (rein)
-        { von: 73, nach: 66, proben: [[62, 66]] },                       //  8 Quinte cis¹ → fis (rein) · Terz d–fis
-        { von: 66, nach: 71, proben: [[64, 71]] },                       //  9 Quarte fis → h (rein) · Quinte e–h
-        { von: 62, nach: 67, proben: [[67, 71]] },                       // 10 Quarte d → g · Terz g–h
-        { von: 67, nach: 72, proben: [[65, 72], [68, 72], [69, 73]] }    // 11 Quarte g → c¹ · Quinte f–c¹, Terz gis–c¹, Terz a–cis¹
+        { von: 57, nach: 53, proben: [] },                               //  1 Terz A → F
+        { von: 57, nach: 52, proben: [] },                               //  2 Quarte A → E
+        { von: 57, nach: 50, proben: [[50, 53]] },                       //  3 Quinte A → D · kleine Terz D–F
+        { von: 53, nach: 58, proben: [] },                               //  4 Quarte F → B (rein)
+        { von: 58, nach: 51, proben: [] },                               //  5 Quinte B → Es (rein)
+        { von: 51, nach: 56, proben: [] },                               //  6 Quarte Es → Gis (rein)
+        { von: 56, nach: 61, proben: [] },                               //  7 Quarte Gis → cis (rein)
+        { von: 61, nach: 54, proben: [[50, 54]] },                       //  8 Quinte cis → Fis (rein) · Terz D–Fis
+        { von: 54, nach: 59, proben: [[52, 59]] },                       //  9 Quarte Fis → H (rein) · Quinte E–H
+        { von: 50, nach: 55, proben: [[55, 59]] },                       // 10 Quarte D → G · Terz G–H
+        { von: 55, nach: 60, proben: [[53, 60], [56, 60], [57, 61]] }    // 11 Quarte G → c · Quinte F–c, Terz Gis–c, Terz A–cis
       ]
     }
   };
@@ -594,6 +596,7 @@
 
   function zirkelName(id) {
     const z = ZIRKEL[id], v = versatz(z);
+    if (z.name) return z.name;
     return z.titel + " " + tonSchrift(z.unten + v) + "–" + tonSchrift(z.oben + v) +
       (z.fuss ? " (" + z.fuss + "′)" : " (Klavier)");
   }
