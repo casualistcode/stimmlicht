@@ -398,7 +398,7 @@
 <script>
   // ===== Einstellungen =====================================================
   const KAMMERTON_HZ = 440;   // Vorgabe für a1 in Hz; auf der Seite änderbar (Tipp auf „a¹ = 440 Hz“)
-  const START_MIDI   = 69;    // Startton des Quintenzirkels (69 = a1); Oktave = Startton bis Startton + 12
+  const START_MIDI   = 69;    // Startton des Quintenzirkels, klingend (69 = a¹ = 440 Hz = Taste a im 4'); Oktave = Startton bis Startton + 12
   // =========================================================================
 
   const A1_MIDI = 69;
@@ -448,11 +448,14 @@
     return abw.map(function (x) { return x - a; });
   }
 
-  // Die wählbaren Stimmzirkel. MIDI-Nummern: d = 50, e = 52, f = 53, … a = 57, … c¹ = 60, … e¹ = 64.
-  // Ohne „abweichung“ wird gleichstufig gerechnet.
+  // Die wählbaren Stimmzirkel. Alle Töne als klingende MIDI-Nummern: a = 57 (220 Hz), a¹ = 69 (440 Hz) …
+  // „fuss“: Register, auf dem gestimmt wird. Angezeigt werden dann die Tastennamen
+  // (im 4' klingt jede Taste eine Oktave höher: Taste a = klingend a¹ = 440 Hz).
+  // Ohne „fuss“ (Klavier) sind Taste und Klang gleich. Ohne „abweichung“ wird gleichstufig gerechnet.
   const ZIRKEL = {
     quinten: {
       titel: "Quintenzirkel",
+      fuss: 4,
       tonnamen: ["c", "cis", "d", "dis", "e", "f", "fis", "g", "gis", "a", "b", "h"],
       unten: START_MIDI, oben: START_MIDI + 12,
       bezugston: START_MIDI,
@@ -461,7 +464,7 @@
     // Steinway-Stimmzirkel von e–e¹ nach Ulrich van Aaken (EUROPIANO 1985):
     // mit drei großen Terzen und Kontrollintervallen („Proben“) nach jedem Schritt.
     steinway: {
-      titel: "Steinway-Zirkel",
+      titel: "Steinway",
       tonnamen: ["c", "cis", "d", "es", "e", "f", "fis", "g", "gis", "a", "b", "h"],
       unten: 52, oben: 64,
       bezugston: 57,
@@ -480,26 +483,27 @@
         { von: 58, nach: 63, proben: [] }                                // 12 Quarte b → es¹
       ]
     },
-    // Vallotti, Temperaturoktave d–d¹: von a aus Terz, Quarte und Quinte abwärts,
-    // dann von f aus die reinen Quinten bis h, zuletzt die verengten Quinten d–g–c¹.
+    // Vallotti im 4', Tasten d–d¹ (klingend d¹–d²): von Taste a (440 Hz) aus Terz, Quarte und
+    // Quinte abwärts, dann von f aus die reinen Quinten bis h, zuletzt die verengten Quinten d–g–c¹.
     vallotti: {
       titel: "Vallotti",
+      fuss: 4,
       tonnamen: ["c", "cis", "d", "es", "e", "f", "fis", "g", "gis", "a", "b", "h"],
       abweichung: vallottiAbweichung(),
-      unten: 50, oben: 62,
-      bezugston: 57,
-      folge: [
-        { von: 57, nach: 53, proben: [] },                               //  1 Terz a → f
-        { von: 57, nach: 52, proben: [] },                               //  2 Quarte a → e
-        { von: 57, nach: 50, proben: [[50, 53]] },                       //  3 Quinte a → d · kleine Terz d–f
-        { von: 53, nach: 58, proben: [] },                               //  4 Quarte f → b (rein)
-        { von: 58, nach: 51, proben: [] },                               //  5 Quinte b → es (rein)
-        { von: 51, nach: 56, proben: [] },                               //  6 Quarte es → gis (rein)
-        { von: 56, nach: 61, proben: [] },                               //  7 Quarte gis → cis¹ (rein)
-        { von: 61, nach: 54, proben: [[50, 54]] },                       //  8 Quinte cis¹ → fis (rein) · Terz d–fis
-        { von: 54, nach: 59, proben: [[52, 59]] },                       //  9 Quarte fis → h (rein) · Quinte e–h
-        { von: 50, nach: 55, proben: [[55, 59]] },                       // 10 Quarte d → g · Terz g–h
-        { von: 55, nach: 60, proben: [[53, 60], [56, 60], [57, 61]] }    // 11 Quarte g → c¹ · Quinte f–c¹, Terz gis–c¹, Terz a–cis¹
+      unten: 62, oben: 74,
+      bezugston: 69,
+      folge: [                                                           // Kommentare: Tasten im 4'
+        { von: 69, nach: 65, proben: [] },                               //  1 Terz a → f
+        { von: 69, nach: 64, proben: [] },                               //  2 Quarte a → e
+        { von: 69, nach: 62, proben: [[62, 65]] },                       //  3 Quinte a → d · kleine Terz d–f
+        { von: 65, nach: 70, proben: [] },                               //  4 Quarte f → b (rein)
+        { von: 70, nach: 63, proben: [] },                               //  5 Quinte b → es (rein)
+        { von: 63, nach: 68, proben: [] },                               //  6 Quarte es → gis (rein)
+        { von: 68, nach: 73, proben: [] },                               //  7 Quarte gis → cis¹ (rein)
+        { von: 73, nach: 66, proben: [[62, 66]] },                       //  8 Quinte cis¹ → fis (rein) · Terz d–fis
+        { von: 66, nach: 71, proben: [[64, 71]] },                       //  9 Quarte fis → h (rein) · Quinte e–h
+        { von: 62, nach: 67, proben: [[67, 71]] },                       // 10 Quarte d → g · Terz g–h
+        { von: 67, nach: 72, proben: [[65, 72], [68, 72], [69, 73]] }    // 11 Quarte g → c¹ · Quinte f–c¹, Terz gis–c¹, Terz a–cis¹
       ]
     }
   };
@@ -584,9 +588,14 @@
     });
   }
 
+  // Klingender Ton → Taste: im 4' eine Oktave tiefer, im 2' zwei; ohne Fußlage (Klavier) unverändert
+  function versatz(z) { return z.fuss ? Math.round(12 * Math.log2(z.fuss / 8)) : 0; }
+  function taste(n) { return n + versatz(ZIRKEL[zirkelId]); }
+
   function zirkelName(id) {
-    const z = ZIRKEL[id];
-    return z.titel + " " + tonSchrift(z.unten) + "–" + tonSchrift(z.oben);
+    const z = ZIRKEL[id], v = versatz(z);
+    return z.titel + " " + tonSchrift(z.unten + v) + "–" + tonSchrift(z.oben + v) +
+      (z.fuss ? " (" + z.fuss + "′)" : " (Klavier)");
   }
 
   let schritte = [];
@@ -723,7 +732,7 @@
       const i = schrittZuTon(tk), s = schritte[i];
       ton.textContent = tonnamen[tk];
       ton.setAttribute("aria-label", tonnamen[tk] + ": zu Schritt " + (i + 1) + ", " +
-        s.art + " " + tonText(s.von) + " – " + tonText(s.nach));
+        s.art + " " + tonText(taste(s.von)) + " – " + tonText(taste(s.nach)));
     });
   }
 
@@ -741,9 +750,9 @@
     zeile.appendChild(document.createTextNode(p.art + " "));
     const toene2 = document.createElement("span");
     toene2.className = "ton2";
-    toene2.appendChild(tonKnoten(p.unten));
+    toene2.appendChild(tonKnoten(taste(p.unten)));
     toene2.appendChild(document.createTextNode(" – "));
-    toene2.appendChild(tonKnoten(p.oben));
+    toene2.appendChild(tonKnoten(taste(p.oben)));
     zeile.appendChild(toene2);
     zeile.appendChild(document.createTextNode("  "));
     const richtung = document.createElement("span");
@@ -764,9 +773,9 @@
 
     elSchritt.textContent = "Schritt " + (aktuell + 1) + "/" + schritte.length;
     elIntervall.textContent = s.art + " ";
-    elIntervall.appendChild(tonKnoten(s.von));
+    elIntervall.appendChild(tonKnoten(taste(s.von)));
     elIntervall.appendChild(document.createTextNode(" – "));
-    elIntervall.appendChild(tonKnoten(s.nach));
+    elIntervall.appendChild(tonKnoten(taste(s.nach)));
     elRichtung.textContent = s.richtung;
     elZahl.textContent = s.rate.toFixed(2).replace(".", ",");
 

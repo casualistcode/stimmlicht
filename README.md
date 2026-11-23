@@ -1,18 +1,19 @@
 # Stimmlicht
 
-Kleine Hilfe beim Legen einer gleichstufigen Temperatur nach Gehör (Orgel/Klavier).
+Kleine Hilfe beim Legen einer Temperatur nach Gehör, ausgelegt für den Orgelbau.
 In der Mitte eines Quintenzirkels pulsiert ein Licht im Takt der Schwebung des
 aktuellen Intervalls – orange bei engen, blau bei weiten Intervallen, ruhig weiß bei
 der reinen Oktave.
 
 Drei Stimmzirkel stehen zur Wahl:
 
-- **Quintenzirkel a¹–a²:** zwölf Quinten und Quarten in der Temperaturoktave a¹–a².
-- **Steinway-Zirkel e–e¹:** nach Ulrich van Aaken,
+- **Quintenzirkel a–a¹ (4′):** zwölf Quinten und Quarten, Tasten a–a¹ auf einem 4′-Register
+  (klingend a¹–a², 440–880 Hz).
+- **Steinway e–e¹ (Klavier):** nach Ulrich van Aaken,
   [„Der Steinway-Stimmzirkel von e–e'“](https://www.ulrich-van-aaken.de/blind/DerSteinwayStimmzirkelvonee)
   (EUROPIANO 1985). Beginnt mit der Terz f–a, stimmt drei große Terzen direkt und
   zeigt nach den meisten Schritten Kontrollintervalle („Proben“) mit ihrer Schwebung.
-- **Vallotti d–d¹:** ungleichstufige Stimmung. Die Quinten F–C–G–D–A–E–H sind um je
+- **Vallotti d–d¹ (4′):** ungleichstufige Stimmung, Tasten d–d¹ auf einem 4′-Register. Die Quinten F–C–G–D–A–E–H sind um je
   1/6 pythagoreisches Komma verengt, H–Fis–Cis–Gis–Dis–B–F sind rein. Bei reinen
   Intervallen leuchtet das Licht ruhig – stimmen, bis keine Schwebung mehr da ist.
 
@@ -36,12 +37,15 @@ Nach einer Änderung an der Seite zeigt die App die neue Fassung beim zweiten Ö
 
 ## Bedienung
 
-- **◀ Zurück** / **Weiter ▶** schalten durch die 12 Schritte; nach Schritt 12 geht
-  es wieder zu Schritt 1.
+- **◀ Zurück** / **Weiter ▶** schalten durch die Schritte; nach dem letzten geht
+  es wieder zum ersten.
 - **Zirkel wählen:** In der Kopfzeile auf den Zirkelnamen tippen (z. B.
-  „Quintenzirkel a¹–a²“) und den anderen auswählen. Die Wahl bleibt auf dem Gerät
+  „Quintenzirkel a–a¹ (4′)“) und einen anderen auswählen. Die Wahl bleibt auf dem Gerät
   gespeichert.
-- **Proben ansehen (Steinway-Zirkel):** Jede Probe ist im Ring als innerer Bogen von
+- **Tastennamen:** Bei den Orgel-Zirkeln (4′) stehen die Namen der Tasten, die man im
+  4′ greift – die Taste a klingt dort mit 440 Hz (= a¹). Beim Steinway-Zirkel (Klavier)
+  sind Taste und Klang gleich. Gerechnet wird immer mit dem klingenden Ton.
+- **Proben ansehen (Steinway, Vallotti):** Jede Probe ist im Ring als innerer Bogen von
   Ton zu Ton eingezeichnet (orange = eng, blau = weit). Auf den Bogen oder die
   Probe-Zeile tippen – das Licht pulsiert dann im Takt und in der Farbe dieser Probe,
   ihre beiden Töne leuchten mit, das Hauptintervall wird blasser. Nochmal tippen, aufs
@@ -83,7 +87,7 @@ Der Kammerton wird auf der Seite eingestellt (siehe Bedienung). Ganz oben im
 
 ```js
 const KAMMERTON_HZ = 440;   // Vorgabe für a1 in Hz, solange auf dem Gerät nichts eingestellt ist
-const START_MIDI   = 69;    // Startton des Quintenzirkels (69 = a1)
+const START_MIDI   = 69;    // Startton des Quintenzirkels, klingend (69 = a1 = Taste a im 4')
 ```
 
 Die Schritte des Steinway-Zirkels stehen weiter unten im Skript in `ZIRKEL.steinway`.
@@ -103,24 +107,28 @@ Stift-Symbol bearbeiten) – nach kurzer Zeit ist die Seite aktualisiert.
   - Oktave (2:1): `|f_oben − 2 · f_unten|` (rein, 0)
 - Helligkeit des Lichts: `|cos(π · Schwebungsrate · t)|`
 
-### Quintenzirkel a¹–a²
+### Quintenzirkel a–a¹ (4′)
 
-| Schritt | Intervall | | Schwebungen/s (a1 = 440 Hz) |
+Tasten im 4′, Schwebungen für a¹ = 440 Hz:
+
+| Schritt | Intervall | | Schwebungen/s |
 |---|---|---|---|
-| 1 | Quinte a1 – e2 | eng | 1,49 |
-| 2 | Quarte e2 – h1 | weit | 2,23 |
-| 3 | Quinte h1 – fis2 | eng | 1,67 |
-| 4 | Quarte fis2 – cis2 | weit | 2,51 |
-| 5 | Quinte cis2 – gis2 | eng | 1,88 |
-| 6 | Quarte gis2 – dis2 | weit | 2,81 |
-| 7 | Quarte dis2 – b1 | weit | 2,11 |
-| 8 | Quinte b1 – f2 | eng | 1,58 |
-| 9 | Quarte f2 – c2 | weit | 2,36 |
-| 10 | Quinte c2 – g2 | eng | 1,77 |
-| 11 | Quarte g2 – d2 | weit | 2,65 |
-| 12 | Quinte d2 – a2 | eng | 1,99 |
+| 1 | Quinte a – e1 | eng | 1,49 |
+| 2 | Quarte e1 – h | weit | 2,23 |
+| 3 | Quinte h – fis1 | eng | 1,67 |
+| 4 | Quarte fis1 – cis1 | weit | 2,51 |
+| 5 | Quinte cis1 – gis1 | eng | 1,88 |
+| 6 | Quarte gis1 – dis1 | weit | 2,81 |
+| 7 | Quarte dis1 – b | weit | 2,11 |
+| 8 | Quinte b – f1 | eng | 1,58 |
+| 9 | Quarte f1 – c1 | weit | 2,36 |
+| 10 | Quinte c1 – g1 | eng | 1,77 |
+| 11 | Quarte g1 – d1 | weit | 2,65 |
+| 12 | Quinte d1 – a1 | eng | 1,99 |
 
-### Steinway-Zirkel e–e¹
+### Steinway e–e¹ (Klavier)
+
+Taste = Klang, das a ist das kleine a mit 220 Hz.
 
 | Schritt | gestimmt | | Schw./s | Proben (Schw./s) |
 |---|---|---|---|---|
@@ -146,7 +154,7 @@ Anmerkungen zur Umsetzung:
 - Proben, die der Artikel als Vergleich zu früheren Schritten nennt, sind nur
   teilweise übernommen (höchstens drei pro Schritt).
 
-### Vallotti d–d¹
+### Vallotti d–d¹ (4′)
 
 Abweichung von gleichstufig in Cent (a = 0):
 
@@ -154,19 +162,19 @@ Abweichung von gleichstufig in Cent (a = 0):
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | +5,87 | 0 | +1,96 | +3,91 | −1,96 | +7,82 | −1,96 | +3,91 | +1,96 | 0 | +5,87 | −3,91 |
 
-Von a aus Terz, Quarte und Quinte abwärts, dann von f aus die reinen Quinten bis h,
+Tasten im 4′ (Taste a = 440 Hz). Von a aus Terz, Quarte und Quinte abwärts, dann von f aus die reinen Quinten bis h,
 zuletzt die verengten Quinten d–g–c¹:
 
 | Schritt | gestimmt | | Schw./s | Proben (Schw./s) |
 |---|---|---|---|---|
-| 1 | Terz a → f | weit | 2,98 | – |
-| 2 | Quarte a → e | weit | 1,49 | – |
-| 3 | Quinte a → d | eng | 0,99 | kleine Terz d–f eng 4,97 |
+| 1 | Terz a → f | weit | 5,95 | – |
+| 2 | Quarte a → e | weit | 2,98 | – |
+| 3 | Quinte a → d | eng | 1,99 | kleine Terz d–f eng 9,93 |
 | 4 | Quarte f → b | rein | 0 | – |
 | 5 | Quinte b → es | rein | 0 | – |
 | 6 | Quarte es → gis | rein | 0 | – |
 | 7 | Quarte gis → cis1 | rein | 0 | – |
-| 8 | Quinte cis1 → fis | rein | 0 | Terz d–fis weit 4,16 |
-| 9 | Quarte fis → h | rein | 0 | Quinte e–h eng 1,11 |
-| 10 | Quarte d → g | weit | 1,33 | Terz g–h weit 3,33 |
-| 11 | Quarte g → c1 | weit | 1,78 | Quinte f–c1 eng 1,19 · Terz gis–c1 weit 10,62 · Terz a–cis1 weit 8,73 |
+| 8 | Quinte cis1 → fis | rein | 0 | Terz d–fis weit 8,32 |
+| 9 | Quarte fis → h | rein | 0 | Quinte e–h eng 2,23 |
+| 10 | Quarte d → g | weit | 2,66 | Terz g–h weit 6,67 |
+| 11 | Quarte g → c1 | weit | 3,55 | Quinte f–c1 eng 2,37 · Terz gis–c1 weit 21,24 · Terz a–cis1 weit 17,46 |
