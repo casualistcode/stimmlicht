@@ -5,7 +5,7 @@ In der Mitte eines Quintenzirkels pulsiert ein Licht im Takt der Schwebung des
 aktuellen Intervalls – orange bei engen, blau bei weiten Intervallen, ruhig weiß bei
 der reinen Oktave.
 
-Drei Stimmzirkel stehen zur Wahl:
+Vier Stimmzirkel stehen zur Wahl:
 
 - **Quintenzirkel a–a¹ (4′):** zwölf Quinten und Quarten, Tasten a–a¹ auf einem 4′-Register
   (klingend a¹–a², 440–880 Hz).
@@ -17,6 +17,10 @@ Drei Stimmzirkel stehen zur Wahl:
   Taste A, dem ersten a von unten, klingend 220 Hz). Die Quinten F–C–G–D–A–E–H sind um je
   1/6 pythagoreisches Komma verengt, H–Fis–Cis–Gis–Dis–B–F sind rein. Bei reinen
   Intervallen leuchtet das Licht ruhig – stimmen, bis keine Schwebung mehr da ist.
+- **Neidhardt „Kleine Stadt“ (1732):** Werte nach der Tabelle von Orgelbau Rohlf, Stimmfolge
+  nach Bradley Lehman ([larips.com](https://bpl.rf.gd/larips/practical.html)). Start wie
+  Vallotti auf Taste A im 4′. Die langsamen 1/12-Komma-Quinten werden nicht gezählt, sondern
+  gleichschwebend zwischen ihre Nachbarn gelegt („ausgleichen“).
 
 **Zur Seite:** <https://casualistcode.github.io/stimmlicht/>
 
@@ -46,7 +50,7 @@ Nach einer Änderung an der Seite zeigt die App die neue Fassung beim zweiten Ö
 - **Tastennamen:** Bei den Orgel-Zirkeln (4′) stehen die Namen der Tasten, die man im
   4′ greift – die Taste a klingt dort mit 440 Hz (= a¹). Beim Steinway-Zirkel (Klavier)
   sind Taste und Klang gleich. Gerechnet wird immer mit dem klingenden Ton.
-- **Proben ansehen (Steinway, Vallotti):** Jede Probe ist im Ring als innerer Bogen von
+- **Proben ansehen (Steinway, Vallotti, Neidhardt):** Jede Probe ist im Ring als innerer Bogen von
   Ton zu Ton eingezeichnet (orange = eng, blau = weit). Auf den Bogen oder die
   Probe-Zeile tippen – das Licht pulsiert dann im Takt und in der Farbe dieser Probe,
   ihre beiden Töne leuchten mit, das Hauptintervall wird blasser. Nochmal tippen, aufs
@@ -180,3 +184,34 @@ Quinten bis H, zuletzt die verengten Quinten D–G–c:
 | 9 | Quarte Fis → H | rein | 0 | Quinte E–H eng 1,11 |
 | 10 | Quarte D → G | weit | 1,33 | Terz G–H weit 3,33 |
 | 11 | Quarte G → c | weit | 1,78 | Quinte F–c eng 1,19 · Terz Gis–c weit 10,62 · Terz A–cis weit 8,73 |
+
+### Neidhardt „Kleine Stadt“ (1732)
+
+Quinten C–G–D–A–E um je 1/6 pythagoreisches Komma verengt, E–H, H–Fis, Gis–Dis und Dis–B um
+je 1/12, F–C, B–F, Fis–Cis und Cis–Gis rein. Abweichung von gleichstufig in Cent (a = 0):
+
+| c | cis | d | dis | e | f | fis | g | gis | a | b | h |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| +5,87 | 0 | +1,96 | +1,96 | −1,96 | +3,91 | −1,96 | +3,91 | +1,96 | 0 | +1,96 | −1,96 |
+
+Tasten im 4′ (Taste A = erstes a von unten, klingt 220 Hz). Die Schwebungen sind halb so
+schnell wie in der Rohlf-Tabelle, weil sie eine Oktave tiefer liegen (dort klingend a¹–e²
+2,98, hier A–E 1,49).
+
+| Schritt | gestimmt | | Schw./s | Proben (Schw./s) |
+|---|---|---|---|---|
+| 1 | Quarte A → E | weit | 1,49 | – |
+| 2 | Quinte A → D | eng | 0,99 | – |
+| 3 | Quarte D → G | weit | 1,33 | – |
+| 4 | Quarte G → c | weit | 1,78 | – |
+| 5 | Quinte c → F | rein | 0 | Terz F–A weit 4,96 |
+| 6 | Quarte F → B | rein | 0 | – |
+| 7 | Quinte E → H, **vorläufig** (wie die 1/6-Quinten) | eng | 1,11 | – |
+| 8 | Quarte H → Fis (vom vorläufigen H) | rein | 0 | Terz D–Fis weit 4,16 |
+| 9 | Quinte Fis → cis | rein | 0 | Terz A–cis weit 8,73 |
+| 10 | Quarte cis → Gis | rein | 0 | Terz E–Gis weit 8,41 |
+| 11 | **H ausgleichen:** E–H und Fis–H gleich klingend | eng | 0,56 | Quarte Fis–H weit 0,84 · Terz G–H weit 4,45 |
+| 12 | **Dis ausgleichen:** Gis–Dis und Dis–B gleich klingend | weit | 0,70 | Quinte Dis–B eng 0,53 |
+
+„Gleich klingend“ heißt gleiche Verstimmung, nicht gleiche Schwebungszahl: Der höhere Ton
+schwebt schneller. Mit Tipp auf die Probe lässt das Licht das zweite Intervall pulsieren.

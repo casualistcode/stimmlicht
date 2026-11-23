@@ -448,6 +448,30 @@
     return abw.map(function (x) { return x - a; });
   }
 
+  // Allgemein: Stimmung aus der Verengung der elf Quinten ab A aufwärts
+  // (A–E, E–H, H–Fis, Fis–Cis, Cis–Gis, Gis–Dis, Dis–B, B–F, F–C, C–G, G–D; D–A ergibt sich),
+  // jeweils als Bruchteil des pythagoreischen Kommas. Ergebnis wie oben: Cent je Tonklasse, a = 0.
+  const REINE_QUINTE = 1200 * Math.log2(3 / 2);
+  const PYTH_KOMMA   = 1200 * Math.log2(Math.pow(3, 12) / Math.pow(2, 19));
+
+  function temperaturAusQuinten(teile) {
+    const abw = [];
+    abw[9] = 0;
+    let cent = 0, tk = 9;
+    for (let i = 0; i < 11; i++) {
+      cent += REINE_QUINTE - teile[i] * PYTH_KOMMA;
+      tk = (tk + 7) % 12;
+      const x = cent - 100 * ((tk - 9 + 12) % 12);
+      abw[tk] = x - 1200 * Math.round(x / 1200);
+    }
+    return abw;
+  }
+
+  // Neidhardt „Kleine Stadt“ (1732): C–G–D–A–E 1/6 Komma, E–H, H–Fis, Gis–Dis, Dis–B 1/12, Rest rein
+  const NEIDHARDT_KLEINE_STADT = temperaturAusQuinten([1/6, 1/12, 1/12, 0, 0, 1/12, 1/12, 0, 0, 1/6, 1/6]);
+  // H vorläufig als 1/6-Quinte über E (wie A–E); wird in Schritt 11 zwischen E und Fis ausgeglichen
+  const H_VORLAEUFIG = { 11: NEIDHARDT_KLEINE_STADT[4] + REINE_QUINTE - PYTH_KOMMA / 6 - 700 };
+
   // Die wählbaren Stimmzirkel. Alle Töne als klingende MIDI-Nummern: a = 57 (220 Hz), a¹ = 69 (440 Hz) …
   // „fuss“: Register, auf dem gestimmt wird. Angezeigt werden dann die Tastennamen
   // (im 4' klingt jede Taste eine Oktave höher: Taste a = klingend a¹ = 440 Hz).
@@ -507,6 +531,33 @@
         { von: 50, nach: 55, proben: [[55, 59]] },                       // 10 Quarte D → G · Terz G–H
         { von: 55, nach: 60, proben: [[53, 60], [56, 60], [57, 61]] }    // 11 Quarte G → c · Quinte F–c, Terz Gis–c, Terz A–cis
       ]
+    },
+    // Neidhardt „Kleine Stadt“ (1732), Werte wie Tabelle Orgelbau Rohlf; Stimmfolge nach B. Lehman
+    // (larips.com), Start wie Vallotti auf Taste A im 4' (klingend 220 Hz). H wird erst vorläufig
+    // wie die 1/6-Quinten gestimmt, Fis–Cis–Gis rein davon, dann H und Dis gleichschwebend ausgeglichen.
+    neidhardt: {
+      titel: "Neidhardt",
+      name: "Neidhardt „Kleine Stadt“",
+      option: "Neidhardt „Kleine Stadt“ (1732)",
+      fuss: 4,
+      tonnamen: ["c", "cis", "d", "dis", "e", "f", "fis", "g", "gis", "a", "b", "h"],
+      abweichung: NEIDHARDT_KLEINE_STADT,
+      unten: 50, oben: 62,
+      bezugston: 57,
+      folge: [                                                           // Kommentare: Tasten im 4'
+        { von: 57, nach: 52, proben: [] },                               //  1 Quarte A → E
+        { von: 57, nach: 50, proben: [] },                               //  2 Quinte A → D
+        { von: 50, nach: 55, proben: [] },                               //  3 Quarte D → G
+        { von: 55, nach: 60, proben: [] },                               //  4 Quarte G → c
+        { von: 60, nach: 53, proben: [[53, 57]] },                       //  5 Quinte c → F (rein) · Terz F–A
+        { von: 53, nach: 58, proben: [] },                               //  6 Quarte F → B (rein)
+        { von: 52, nach: 59, proben: [], hinweis: "vorläufig", vorlaeufig: H_VORLAEUFIG },          //  7 Quinte E → H, vorläufig
+        { von: 59, nach: 54, proben: [[50, 54]], vorlaeufig: H_VORLAEUFIG },                       //  8 Quarte H → Fis (rein) · Terz D–Fis
+        { von: 54, nach: 61, proben: [[57, 61]] },                       //  9 Quinte Fis → cis (rein) · Terz A–cis
+        { von: 61, nach: 56, proben: [[52, 56]] },                       // 10 Quarte cis → Gis (rein) · Terz E–Gis
+        { von: 52, nach: 59, proben: [[54, 59], [55, 59]], hinweis: "ausgleichen" },               // 11 H zwischen E und Fis · Quarte Fis–H, Terz G–H
+        { von: 56, nach: 51, proben: [[51, 58]], hinweis: "ausgleichen" }                          // 12 Dis zwischen Gis und B · Quinte Dis–B
+      ]
     }
   };
 
@@ -523,9 +574,13 @@
   let tonnamen = ZIRKEL.quinten.tonnamen;
 
   // Frequenz zur MIDI-Notennummer n: gleichstufig, verschoben um die Abweichung der gewählten Stimmung
+  let vorlaeufig = null;              // in einzelnen Schritten: Töne, die noch nicht an ihrem Endplatz liegen
+
   function frequenz(n) {
     const abw = ZIRKEL[zirkelId].abweichung;
-    const cent = abw ? abw[((n % 12) + 12) % 12] : 0;
+    const tk = ((n % 12) + 12) % 12;
+    let cent = abw ? abw[tk] : 0;
+    if (vorlaeufig && vorlaeufig[tk] !== undefined) cent = vorlaeufig[tk];
     return kammerton * Math.pow(2, (n - A1_MIDI) / 12 + cent / 1200);
   }
 
@@ -582,10 +637,13 @@
 
   function schritteBerechnen() {
     return ZIRKEL[zirkelId].folge.map(function (f) {
+      vorlaeufig = f.vorlaeufig || null;
       const s = intervall(f.von, f.nach);
       s.von = f.von;
       s.nach = f.nach;
+      s.hinweis = f.hinweis || "";
       s.proben = f.proben.map(function (p) { return intervall(p[0], p[1]); });
+      vorlaeufig = null;
       return s;
     });
   }
@@ -774,7 +832,7 @@
 
     document.body.className = s.richtung;
 
-    elSchritt.textContent = "Schritt " + (aktuell + 1) + "/" + schritte.length;
+    elSchritt.textContent = "Schritt " + (aktuell + 1) + "/" + schritte.length + (s.hinweis ? " · " + s.hinweis : "");
     elIntervall.textContent = s.art + " ";
     elIntervall.appendChild(tonKnoten(taste(s.von)));
     elIntervall.appendChild(document.createTextNode(" – "));
@@ -880,7 +938,7 @@
   Object.keys(ZIRKEL).forEach(function (id) {
     const option = document.createElement("option");
     option.value = id;
-    option.textContent = zirkelName(id);
+    option.textContent = ZIRKEL[id].option || zirkelName(id);
     zirkelwahl.appendChild(option);
   });
 
