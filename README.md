@@ -5,13 +5,16 @@ In der Mitte eines Quintenzirkels pulsiert ein Licht im Takt der Schwebung des
 aktuellen Intervalls – orange bei engen, blau bei weiten Intervallen, ruhig weiß bei
 der reinen Oktave.
 
-Zwei Stimmzirkel stehen zur Wahl:
+Drei Stimmzirkel stehen zur Wahl:
 
 - **Quintenzirkel a¹–a²:** zwölf Quinten und Quarten in der Temperaturoktave a¹–a².
 - **Steinway-Zirkel e–e¹:** nach Ulrich van Aaken,
   [„Der Steinway-Stimmzirkel von e–e'“](https://www.ulrich-van-aaken.de/blind/DerSteinwayStimmzirkelvonee)
   (EUROPIANO 1985). Beginnt mit der Terz f–a, stimmt drei große Terzen direkt und
   zeigt nach den meisten Schritten Kontrollintervalle („Proben“) mit ihrer Schwebung.
+- **Vallotti d–d¹:** ungleichstufige Stimmung. Die Quinten F–C–G–D–A–E–H sind um je
+  1/6 pythagoreisches Komma verengt, H–Fis–Cis–Gis–Dis–B–F sind rein. Bei reinen
+  Intervallen leuchtet das Licht ruhig – stimmen, bis keine Schwebung mehr da ist.
 
 **Zur Seite:** <https://casualistcode.github.io/stimmlicht/>
 
@@ -142,3 +145,28 @@ Anmerkungen zur Umsetzung:
   fis–cis¹ und e–cis¹.
 - Proben, die der Artikel als Vergleich zu früheren Schritten nennt, sind nur
   teilweise übernommen (höchstens drei pro Schritt).
+
+### Vallotti d–d¹
+
+Abweichung von gleichstufig in Cent (a = 0):
+
+| c | cis | d | es | e | f | fis | g | gis | a | b | h |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| +5,87 | 0 | +1,96 | +3,91 | −1,96 | +7,82 | −1,96 | +3,91 | +1,96 | 0 | +5,87 | −3,91 |
+
+Von a aus Terz, Quarte und Quinte abwärts, dann von f aus die reinen Quinten bis h,
+zuletzt die verengten Quinten d–g–c¹:
+
+| Schritt | gestimmt | | Schw./s | Proben (Schw./s) |
+|---|---|---|---|---|
+| 1 | Terz a → f | weit | 2,98 | – |
+| 2 | Quarte a → e | weit | 1,49 | – |
+| 3 | Quinte a → d | eng | 0,99 | kleine Terz d–f eng 4,97 |
+| 4 | Quarte f → b | rein | 0 | – |
+| 5 | Quinte b → es | rein | 0 | – |
+| 6 | Quarte es → gis | rein | 0 | – |
+| 7 | Quarte gis → cis1 | rein | 0 | – |
+| 8 | Quinte cis1 → fis | rein | 0 | Terz d–fis weit 4,16 |
+| 9 | Quarte fis → h | rein | 0 | Quinte e–h eng 1,11 |
+| 10 | Quarte d → g | weit | 1,33 | Terz g–h weit 3,33 |
+| 11 | Quarte g → c1 | weit | 1,78 | Quinte f–c1 eng 1,19 · Terz gis–c1 weit 10,62 · Terz a–cis1 weit 8,73 |

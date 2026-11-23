@@ -431,7 +431,25 @@
     return folge;
   }
 
-  // Die wählbaren Stimmzirkel. MIDI-Nummern: e = 52, f = 53, … a = 57, … c¹ = 60, … e¹ = 64.
+  // Vallotti: die sechs Quinten F–C–G–D–A–E–H um 1/6 pythagoreisches Komma verengt, H–Fis–Cis–Gis–Dis–B–F rein.
+  // Ergebnis: Abweichung jeder Tonklasse von gleichstufig in Cent, bezogen auf a = 0.
+  function vallottiAbweichung() {
+    const rein  = 1200 * Math.log2(3 / 2);
+    const komma = 1200 * Math.log2(Math.pow(3, 12) / Math.pow(2, 19));
+    const eng   = rein - komma / 6;
+    const lage  = [];                                     // Lage in Cent ab c, entlang der Quinten
+    let cent = 0, tk = 0;
+    lage[0] = 0;
+    for (let i = 0; i < 5; i++) { cent += eng; tk = (tk + 7) % 12; lage[tk] = cent; }   // g d a e h
+    cent = -eng; tk = 5; lage[5] = cent;                                                // f
+    for (let i = 0; i < 5; i++) { cent -= rein; tk = (tk + 5) % 12; lage[tk] = cent; }  // b es as des ges
+    const abw = lage.map(function (c, k) { const x = c - 100 * k; return x - 1200 * Math.round(x / 1200); });
+    const a = abw[9];
+    return abw.map(function (x) { return x - a; });
+  }
+
+  // Die wählbaren Stimmzirkel. MIDI-Nummern: d = 50, e = 52, f = 53, … a = 57, … c¹ = 60, … e¹ = 64.
+  // Ohne „abweichung“ wird gleichstufig gerechnet.
   const ZIRKEL = {
     quinten: {
       titel: "Quintenzirkel",
@@ -461,6 +479,28 @@
         { von: 56, nach: 61, proben: [[57, 61], [54, 61], [52, 61]] },   // 11 Quarte gis → cis¹ · Terz a–cis¹, Quinte fis–cis¹, Sexte e–cis¹
         { von: 58, nach: 63, proben: [] }                                // 12 Quarte b → es¹
       ]
+    },
+    // Vallotti, Temperaturoktave d–d¹: von a aus Terz, Quarte und Quinte abwärts,
+    // dann von f aus die reinen Quinten bis h, zuletzt die verengten Quinten d–g–c¹.
+    vallotti: {
+      titel: "Vallotti",
+      tonnamen: ["c", "cis", "d", "es", "e", "f", "fis", "g", "gis", "a", "b", "h"],
+      abweichung: vallottiAbweichung(),
+      unten: 50, oben: 62,
+      bezugston: 57,
+      folge: [
+        { von: 57, nach: 53, proben: [] },                               //  1 Terz a → f
+        { von: 57, nach: 52, proben: [] },                               //  2 Quarte a → e
+        { von: 57, nach: 50, proben: [[50, 53]] },                       //  3 Quinte a → d · kleine Terz d–f
+        { von: 53, nach: 58, proben: [] },                               //  4 Quarte f → b (rein)
+        { von: 58, nach: 51, proben: [] },                               //  5 Quinte b → es (rein)
+        { von: 51, nach: 56, proben: [] },                               //  6 Quarte es → gis (rein)
+        { von: 56, nach: 61, proben: [] },                               //  7 Quarte gis → cis¹ (rein)
+        { von: 61, nach: 54, proben: [[50, 54]] },                       //  8 Quinte cis¹ → fis (rein) · Terz d–fis
+        { von: 54, nach: 59, proben: [[52, 59]] },                       //  9 Quarte fis → h (rein) · Quinte e–h
+        { von: 50, nach: 55, proben: [[55, 59]] },                       // 10 Quarte d → g · Terz g–h
+        { von: 55, nach: 60, proben: [[53, 60], [56, 60], [57, 61]] }    // 11 Quarte g → c¹ · Quinte f–c¹, Terz gis–c¹, Terz a–cis¹
+      ]
     }
   };
 
@@ -476,9 +516,11 @@
   let zirkelId = "quinten";
   let tonnamen = ZIRKEL.quinten.tonnamen;
 
-  // Gleichstufige Frequenz zur MIDI-Notennummer n
+  // Frequenz zur MIDI-Notennummer n: gleichstufig, verschoben um die Abweichung der gewählten Stimmung
   function frequenz(n) {
-    return kammerton * Math.pow(2, (n - A1_MIDI) / 12);
+    const abw = ZIRKEL[zirkelId].abweichung;
+    const cent = abw ? abw[((n % 12) + 12) % 12] : 0;
+    return kammerton * Math.pow(2, (n - A1_MIDI) / 12 + cent / 1200);
   }
 
   function klasse(n) { return ((n % 12) + 12) % 12; }
