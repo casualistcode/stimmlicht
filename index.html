@@ -472,6 +472,18 @@
   // H vorläufig als 1/6-Quinte über E (wie A–E); wird in Schritt 11 zwischen E und Fis ausgeglichen
   const H_VORLAEUFIG = { 11: NEIDHARDT_KLEINE_STADT[4] + REINE_QUINTE - PYTH_KOMMA / 6 - 700 };
 
+  // Neidhardt „Dorf“ (1732): D–A und A–E 1/4 Komma, G–D 1/6, C–G, B–F, H–Fis, Cis–Gis 1/12, Rest rein
+  const NEIDHARDT_DORF = temperaturAusQuinten([1/4, 0, 1/12, 0, 1/12, 0, 0, 1/12, 0, 1/12, 1/6]);
+
+  // Neidhardt „Große Stadt“ (1724): C–G, G–D, D–A 1/6 Komma, F–C, E–H, Gis–Dis rein, die übrigen 1/12
+  const NEIDHARDT_GROSSE_STADT = temperaturAusQuinten([1/12, 0, 1/12, 1/12, 1/12, 0, 1/12, 1/12, 0, 1/6, 1/6]);
+  // Vorläufige Lagen nach Lehman: E und F erst als 1/6-Quinten, H und B rein davon
+  const GS_E = { 4:  NEIDHARDT_GROSSE_STADT[4]  - PYTH_KOMMA / 12 };
+  const GS_H = { 11: NEIDHARDT_GROSSE_STADT[11] - PYTH_KOMMA / 12 };
+  const GS_F = { 5:  NEIDHARDT_GROSSE_STADT[5]  + PYTH_KOMMA / 6 };
+  const GS_B = { 10: NEIDHARDT_GROSSE_STADT[10] + PYTH_KOMMA / 12 };
+  function mit(a, b) { return Object.assign({}, a, b); }
+
   // Die wählbaren Stimmzirkel. Alle Töne als klingende MIDI-Nummern: a = 57 (220 Hz), a¹ = 69 (440 Hz) …
   // „fuss“: Register, auf dem gestimmt wird. Angezeigt werden dann die Tastennamen
   // (im 4' klingt jede Taste eine Oktave höher: Taste a = klingend a¹ = 440 Hz).
@@ -532,13 +544,37 @@
         { von: 55, nach: 60, proben: [[53, 60], [56, 60], [57, 61]] }    // 11 Quarte G → c · Quinte F–c, Terz Gis–c, Terz A–cis
       ]
     },
+    // Neidhardt „Dorf“ (1732), Werte wie Tabelle Orgelbau Rohlf („Für das Dorf 1732“). Lehman beschreibt
+    // diese Fassung nicht; Stimmfolge im selben Stil: Kern von A aus, dann reine Quinten zu beiden Seiten.
+    // Die 1/12-Quinten haben hier keinen gleich temperierten Nachbarn, werden also direkt gestimmt.
+    neidhardtDorf: {
+      titel: "Neidhardt",
+      name: "Neidhardt „Dorf“ 1732",
+      fuss: 4,
+      tonnamen: ["c", "cis", "d", "dis", "e", "f", "fis", "g", "gis", "a", "b", "h"],
+      abweichung: NEIDHARDT_DORF,
+      unten: 50, oben: 62,
+      bezugston: 57,
+      folge: [                                                           // Kommentare: Tasten im 4'
+        { von: 57, nach: 52, proben: [] },                               //  1 Quarte A → E (1/4)
+        { von: 57, nach: 50, proben: [] },                               //  2 Quinte A → D (1/4)
+        { von: 50, nach: 55, proben: [] },                               //  3 Quarte D → G (1/6)
+        { von: 55, nach: 60, proben: [] },                               //  4 Quarte G → c (1/12)
+        { von: 60, nach: 53, proben: [[53, 57]] },                       //  5 Quinte c → F (rein) · Terz F–A
+        { von: 53, nach: 58, proben: [] },                               //  6 Quarte F → B (1/12)
+        { von: 58, nach: 51, proben: [] },                               //  7 Quinte B → Es (rein)
+        { von: 51, nach: 56, proben: [] },                               //  8 Quarte Es → Gis (rein)
+        { von: 52, nach: 59, proben: [[55, 59]] },                       //  9 Quinte E → H (rein) · Terz G–H
+        { von: 59, nach: 54, proben: [[50, 54]] },                       // 10 Quarte H → Fis (1/12) · Terz D–Fis
+        { von: 54, nach: 61, proben: [[56, 61], [57, 61], [52, 56]] }    // 11 Quinte Fis → cis (rein) · Quarte Gis–cis (Zirkel schließt), Terz A–cis, Terz E–Gis
+      ]
+    },
     // Neidhardt „Kleine Stadt“ (1732), Werte wie Tabelle Orgelbau Rohlf; Stimmfolge nach B. Lehman
     // (larips.com), Start wie Vallotti auf Taste A im 4' (klingend 220 Hz). H wird erst vorläufig
     // wie die 1/6-Quinten gestimmt, Fis–Cis–Gis rein davon, dann H und Dis gleichschwebend ausgeglichen.
     neidhardt: {
       titel: "Neidhardt",
-      name: "Neidhardt „Kleine Stadt“",
-      option: "Neidhardt „Kleine Stadt“ (1732)",
+      name: "Neidhardt „Kleine Stadt“ 1732",
       fuss: 4,
       tonnamen: ["c", "cis", "d", "dis", "e", "f", "fis", "g", "gis", "a", "b", "h"],
       abweichung: NEIDHARDT_KLEINE_STADT,
@@ -557,6 +593,36 @@
         { von: 61, nach: 56, proben: [[52, 56]] },                       // 10 Quarte cis → Gis (rein) · Terz E–Gis
         { von: 52, nach: 59, proben: [[54, 59], [55, 59]], hinweis: "ausgleichen" },               // 11 H zwischen E und Fis · Quarte Fis–H, Terz G–H
         { von: 56, nach: 51, proben: [[51, 58]], hinweis: "ausgleichen" }                          // 12 Dis zwischen Gis und B · Quinte Dis–B
+      ]
+    },
+    // Neidhardt „Große Stadt“ (1724), Werte wie Tabelle Orgelbau Rohlf; Stimmfolge nach B. Lehman
+    // („1724 Big City“): F–C–G–D–A–E erst alle als 1/6-Quinten (F und E vorläufig), F–B–Es–Gis und
+    // E–H–Fis rein, Cis zwischen Fis und Gis ausgleichen, E zwischen A und H ausgleichen, H rein nachstimmen,
+    // F rein zu c zurückstimmen, B zwischen F und Es ausgleichen.
+    neidhardtGross: {
+      titel: "Neidhardt",
+      name: "Neidhardt „Große Stadt“ 1724",
+      fuss: 4,
+      tonnamen: ["c", "cis", "d", "dis", "e", "f", "fis", "g", "gis", "a", "b", "h"],
+      abweichung: NEIDHARDT_GROSSE_STADT,
+      unten: 50, oben: 62,
+      bezugston: 57,
+      folge: [                                                           // Kommentare: Tasten im 4'
+        { von: 57, nach: 52, proben: [], hinweis: "vorläufig", vorlaeufig: GS_E },                         //  1 Quarte A → E (vorl. 1/6)
+        { von: 57, nach: 50, proben: [] },                                                               //  2 Quinte A → D
+        { von: 50, nach: 55, proben: [] },                                                               //  3 Quarte D → G
+        { von: 55, nach: 60, proben: [] },                                                               //  4 Quarte G → c
+        { von: 60, nach: 53, proben: [], hinweis: "vorläufig", vorlaeufig: GS_F },                         //  5 Quinte c → F (vorl. 1/6)
+        { von: 53, nach: 58, proben: [], hinweis: "vorläufig", vorlaeufig: mit(GS_F, GS_B) },              //  6 Quarte F → B (rein vom vorl. F)
+        { von: 58, nach: 51, proben: [], vorlaeufig: GS_B },                                             //  7 Quinte B → Es (rein)
+        { von: 51, nach: 56, proben: [] },                                                               //  8 Quarte Es → Gis (rein)
+        { von: 52, nach: 59, proben: [], hinweis: "vorläufig", vorlaeufig: mit(GS_E, GS_H) },              //  9 Quinte E → H (rein vom vorl. E)
+        { von: 59, nach: 54, proben: [], vorlaeufig: GS_H },                                             // 10 Quarte H → Fis (rein)
+        { von: 54, nach: 61, proben: [[56, 61]], hinweis: "ausgleichen" },                               // 11 Cis zwischen Fis und Gis · Quarte Gis–cis
+        { von: 57, nach: 52, proben: [[52, 59]], hinweis: "ausgleichen", vorlaeufig: GS_H },               // 12 E zwischen A und H · Quinte E–H (H noch vorl.)
+        { von: 52, nach: 59, proben: [[55, 59]], hinweis: "nachstimmen" },                               // 13 H rein von E · Terz G–H
+        { von: 60, nach: 53, proben: [[53, 57]], hinweis: "nachstimmen" },                               // 14 F rein von c · Terz F–A
+        { von: 53, nach: 58, proben: [[51, 58]], hinweis: "ausgleichen" }                                // 15 B zwischen F und Es · Quinte Es–B
       ]
     }
   };
@@ -988,10 +1054,15 @@
     if (feld.hidden) return;
     feld.hidden = true;
     elKammerton.hidden = false;
+    wahlUndPunkt.forEach(function (el) { el.hidden = false; });
     if (uebernehmen) kammertonSetzen(parseFloat(eingabe.value.replace(",", ".")));
   }
 
+  // Während der Eingabe hat das Zahlenfeld die Zeile für sich (lange Zirkelnamen passen sonst nicht)
+  const wahlUndPunkt = [document.querySelector(".wahl"), document.querySelector(".einstellung .punkt")];
+
   elKammerton.addEventListener("click", function () {
+    wahlUndPunkt.forEach(function (el) { el.hidden = true; });
     elKammerton.hidden = true;
     feld.hidden = false;
     eingabe.value = String(kammerton).replace(".", ",");

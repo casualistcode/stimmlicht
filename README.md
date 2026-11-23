@@ -5,7 +5,7 @@ In der Mitte eines Quintenzirkels pulsiert ein Licht im Takt der Schwebung des
 aktuellen Intervalls – orange bei engen, blau bei weiten Intervallen, ruhig weiß bei
 der reinen Oktave.
 
-Vier Stimmzirkel stehen zur Wahl:
+Sechs Stimmzirkel stehen zur Wahl:
 
 - **Quintenzirkel a–a¹ (4′):** zwölf Quinten und Quarten, Tasten a–a¹ auf einem 4′-Register
   (klingend a¹–a², 440–880 Hz).
@@ -17,10 +17,12 @@ Vier Stimmzirkel stehen zur Wahl:
   Taste A, dem ersten a von unten, klingend 220 Hz). Die Quinten F–C–G–D–A–E–H sind um je
   1/6 pythagoreisches Komma verengt, H–Fis–Cis–Gis–Dis–B–F sind rein. Bei reinen
   Intervallen leuchtet das Licht ruhig – stimmen, bis keine Schwebung mehr da ist.
-- **Neidhardt „Kleine Stadt“ (1732):** Werte nach der Tabelle von Orgelbau Rohlf, Stimmfolge
-  nach Bradley Lehman ([larips.com](https://bpl.rf.gd/larips/practical.html)). Start wie
-  Vallotti auf Taste A im 4′. Die langsamen 1/12-Komma-Quinten werden nicht gezählt, sondern
-  gleichschwebend zwischen ihre Nachbarn gelegt („ausgleichen“).
+- **Neidhardt „Dorf“ 1732, „Kleine Stadt“ 1732, „Große Stadt“ 1724:** Werte nach den Tabellen
+  von Orgelbau Rohlf, Stimmfolgen nach Bradley Lehman
+  ([larips.com](https://bpl.rf.gd/larips/practical.html)). Start wie Vallotti auf Taste A im 4′.
+  Langsame 1/12-Komma-Quinten werden, wo möglich, nicht gezählt, sondern gleichschwebend zwischen
+  ihre Nachbarn gelegt („ausgleichen“). Die Jahreszahl gehört zum Namen, weil Neidhardt 1724 und
+  1732 unterschiedliche Fassungen unter ähnlichen Namen veröffentlicht hat.
 
 **Zur Seite:** <https://casualistcode.github.io/stimmlicht/>
 
@@ -50,7 +52,7 @@ Nach einer Änderung an der Seite zeigt die App die neue Fassung beim zweiten Ö
 - **Tastennamen:** Bei den Orgel-Zirkeln (4′) stehen die Namen der Tasten, die man im
   4′ greift – die Taste a klingt dort mit 440 Hz (= a¹). Beim Steinway-Zirkel (Klavier)
   sind Taste und Klang gleich. Gerechnet wird immer mit dem klingenden Ton.
-- **Proben ansehen (Steinway, Vallotti, Neidhardt):** Jede Probe ist im Ring als innerer Bogen von
+- **Proben ansehen (alle außer Quintenzirkel):** Jede Probe ist im Ring als innerer Bogen von
   Ton zu Ton eingezeichnet (orange = eng, blau = weit). Auf den Bogen oder die
   Probe-Zeile tippen – das Licht pulsiert dann im Takt und in der Farbe dieser Probe,
   ihre beiden Töne leuchten mit, das Hauptintervall wird blasser. Nochmal tippen, aufs
@@ -185,7 +187,7 @@ Quinten bis H, zuletzt die verengten Quinten D–G–c:
 | 10 | Quarte D → G | weit | 1,33 | Terz G–H weit 3,33 |
 | 11 | Quarte G → c | weit | 1,78 | Quinte F–c eng 1,19 · Terz Gis–c weit 10,62 · Terz A–cis weit 8,73 |
 
-### Neidhardt „Kleine Stadt“ (1732)
+### Neidhardt „Kleine Stadt“ 1732
 
 Quinten C–G–D–A–E um je 1/6 pythagoreisches Komma verengt, E–H, H–Fis, Gis–Dis und Dis–B um
 je 1/12, F–C, B–F, Fis–Cis und Cis–Gis rein. Abweichung von gleichstufig in Cent (a = 0):
@@ -215,3 +217,64 @@ schnell wie in der Rohlf-Tabelle, weil sie eine Oktave tiefer liegen (dort kling
 
 „Gleich klingend“ heißt gleiche Verstimmung, nicht gleiche Schwebungszahl: Der höhere Ton
 schwebt schneller. Mit Tipp auf die Probe lässt das Licht das zweite Intervall pulsieren.
+
+### Neidhardt „Dorf“ 1732
+
+Rohlf: „Für das Dorf 1732“. Quinten D–A und A–E um je 1/4 Komma verengt, G–D um 1/6,
+C–G, B–F, H–Fis und Cis–Gis um 1/12, F–C, B–Es, Es–Gis(As), E–H und Fis–Cis rein.
+Abweichung von gleichstufig in Cent (a = 0):
+
+| c | cis | d | dis | e | f | fis | g | gis | a | b | h |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| +5,87 | 0 | +3,91 | +1,96 | −3,91 | +3,91 | −1,96 | +5,87 | 0 | 0 | +3,91 | −1,96 |
+
+Lehman beschreibt diese Fassung nicht (seine „1724 Village“ ist die Kleine Stadt von 1732).
+Die Stimmfolge ist im selben Stil gebaut. Weil hier keine 1/12-Quinte einen gleich temperierten
+Nachbarn hat, werden G → c, F → B und H → Fis direkt gestimmt; die Terz-Proben helfen dabei.
+
+| Schritt | gestimmt | | Schw./s | Proben (Schw./s) |
+|---|---|---|---|---|
+| 1 | Quarte A → E | weit | 2,23 | – |
+| 2 | Quinte A → D | eng | 1,49 | – |
+| 3 | Quarte D → G | weit | 1,33 | – |
+| 4 | Quarte G → c | weit | 0,89 | – |
+| 5 | Quinte c → F | rein | 0 | Terz F–A weit 4,96 |
+| 6 | Quarte F → B | weit | 0,79 | – |
+| 7 | Quinte B → Dis | rein | 0 | – |
+| 8 | Quarte Dis → Gis | rein | 0 | – |
+| 9 | Quinte E → H | rein | 0 | Terz G–H weit 3,34 |
+| 10 | Quarte H → Fis | weit | 0,84 | Terz D–Fis weit 3,33 |
+| 11 | Quinte Fis → cis | rein | 0 | Quarte Gis–cis weit 0,94 (Zirkel schließt) · Terz A–cis 8,73 · Terz E–Gis 8,40 |
+
+### Neidhardt „Große Stadt“ 1724
+
+Quinten C–G, G–D, D–A um je 1/6 Komma verengt, F–C, E–H und Gis–Dis rein, die übrigen sechs
+um 1/12. Abweichung von gleichstufig in Cent (a = 0):
+
+| c | cis | d | dis | e | f | fis | g | gis | a | b | h |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| +5,87 | +1,96 | +1,96 | +3,91 | 0 | +3,91 | +1,96 | +3,91 | +1,96 | 0 | +3,91 | +1,96 |
+
+Stimmfolge nach Lehman („1724 Big City“): Erst F–C–G–D–A–E alle als 1/6-Quinten (F und E
+vorläufig), davon rein F–B–Es–Gis und E–H–Fis, dann ausgleichen und nachstimmen:
+
+| Schritt | gestimmt | | Schw./s | Proben (Schw./s) |
+|---|---|---|---|---|
+| 1 | Quarte A → E, **vorläufig** | weit | 1,49 | – |
+| 2 | Quinte A → D | eng | 0,99 | – |
+| 3 | Quarte D → G | weit | 1,33 | – |
+| 4 | Quarte G → c | weit | 1,78 | – |
+| 5 | Quinte c → F, **vorläufig** | eng | 1,19 | – |
+| 6 | Quarte F → B, **vorläufig** (rein vom vorläufigen F) | rein | 0 | – |
+| 7 | Quinte B → Dis | rein | 0 | – |
+| 8 | Quarte Dis → Gis | rein | 0 | – |
+| 9 | Quinte E → H, **vorläufig** (rein vom vorläufigen E) | rein | 0 | – |
+| 10 | Quarte H → Fis | rein | 0 | – |
+| 11 | **Cis ausgleichen** zwischen Fis und Gis | eng | 0,63 | Quarte Gis–cis weit 0,94 |
+| 12 | **E ausgleichen** zwischen A und H (H noch vorläufig) | weit | 0,74 | Quinte E–H eng 0,56 |
+| 13 | **H nachstimmen:** Quinte E → H rein | rein | 0 | Terz G–H weit 6,68 |
+| 14 | **F nachstimmen:** Quinte c → F rein | rein | 0 | Terz F–A weit 4,96 |
+| 15 | **B ausgleichen** zwischen F und Dis | weit | 0,79 | Quinte Dis–B eng 0,53 |
+
+Alle drei Neidhardt-Fassungen sind gegen die Rohlf-Tabellen geprüft: Eine Oktave höher
+(klingend c¹–h¹) ergeben sich deren Quint- und Terzschwebungen auf die Hundertstel genau.
