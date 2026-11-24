@@ -89,7 +89,7 @@
     justify-content: center;
     height: 24px;
     margin-top: 6px;
-    font-size: .78rem;
+    font-size: min(.78rem, 3.3vw);   /* auf schmalen Handys etwas kleiner, damit lange Namen passen */
     letter-spacing: .04em;
   }
   .punkt { margin: 0 .7em; opacity: .6; }
@@ -370,7 +370,7 @@
 <header>
   <p class="marke">Stimmlicht</p>
   <p class="einstellung">
-    <span class="wahl"><span id="zirkelname"></span><select id="zirkelwahl" aria-label="Stimmzirkel wählen"></select></span><span class="punkt">·</span><button id="kammerton" type="button"></button><span id="feld" hidden>a<sup>1</sup> = <input id="eingabe" type="text" inputmode="decimal" enterkeyhint="done" autocomplete="off" aria-label="Kammerton a1 in Hertz"> Hz</span>
+    <span class="wahl"><span id="zirkelname"></span><select id="zirkelwahl" aria-label="Stimmzirkel wählen"></select></span><span class="punkt">·</span><button id="kammerton" type="button"></button><span id="feld" hidden>Kammerton <input id="eingabe" type="text" inputmode="decimal" enterkeyhint="done" autocomplete="off" aria-label="Kammerton in Hertz"> Hz</span>
   </p>
 </header>
 
@@ -397,7 +397,7 @@
 
 <script>
   // ===== Einstellungen =====================================================
-  const KAMMERTON_HZ = 440;   // Vorgabe für a1 in Hz; auf der Seite änderbar (Tipp auf „a¹ = 440 Hz“)
+  const KAMMERTON_HZ = 440;   // Vorgabe für a1 in Hz; auf der Seite änderbar (Tipp auf „Kammerton 440 Hz“; gemeint ist klingend a¹)
   const START_MIDI   = 69;    // Startton des Quintenzirkels, klingend (69 = a¹ = 440 Hz = Taste a im 4'); Oktave = Startton bis Startton + 12
   // =========================================================================
 
@@ -1028,17 +1028,16 @@
     zirkelwahl.blur();
   });
 
-  // ----- Kammerton einstellen: Tipp auf „a¹ = 440 Hz“ öffnet ein Zahlenfeld -----
+  // ----- Kammerton einstellen: Tipp auf „Kammerton 440 Hz“ öffnet ein Zahlenfeld -----
   const elKammerton = document.getElementById("kammerton");
   const feld        = document.getElementById("feld");
   const eingabe     = document.getElementById("eingabe");
 
   function kammertonZeigen() {
     const wert = String(kammerton).replace(".", ",");
-    elKammerton.textContent = "";
-    elKammerton.appendChild(tonKnoten(A1_MIDI));
-    elKammerton.appendChild(document.createTextNode(" = " + wert + " Hz"));
-    elKammerton.setAttribute("aria-label", "Kammerton a1 = " + wert + " Hertz, ändern");
+    // Kammerton ohne Tonnamen: klingend 440 Hz ist im 8' die Taste a¹, im 4' die Taste a
+    elKammerton.textContent = "Kammerton " + wert + " Hz";
+    elKammerton.setAttribute("aria-label", "Kammerton " + wert + " Hertz, ändern");
   }
 
   function kammertonSetzen(wert) {
